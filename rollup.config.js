@@ -4,7 +4,7 @@ export default {
     file: 'dist/bundle.js',
     format: 'cjs'
   },
-  sourceMap: 'inline',
+  sourcemap: 'inline',
   watch: {
     include: 'src/**'
   }
