@@ -1,9 +1,11 @@
+import Dispatcher from './dispatcher';
+
 const model = {
   state: {},
   scenes: {},
   levels: {}, //This might not even need to be here
   addScene(name, onEnter, controllerMap) {
-    console.log(this);
+    //console.log(this);
     if(!this.scenes[name]){
       this.scenes[name] = Object.assign({}, Scene, {
         id: SceneId,
@@ -39,5 +41,7 @@ const addScene = (name, onEnter, controllerMap) => {
     console.error(`Scene with the name ${name} already exists`);
   }
 }
+
+Dispatcher.addAction(model, {name: "Move", trigger(payload) { console.log(payload); } });
 
 export default model;
