@@ -8,7 +8,7 @@ const dispatcher = {
     console.log(dispatcher);
   },
   addAction(listener, action){
-    console.log(action.trigger);
+    //console.log(action.trigger);
     listener.actions = listener.actions || {};
     listener.actions[action.name] = action.trigger;
     console.log(listener);
@@ -19,7 +19,7 @@ const dispatcher = {
       let listener = this.listeners[i];
       for(let action in listener.actions){
         if(listener.actions.hasOwnProperty(message.action)){
-          console.log(action);
+          //console.log(action);
           listener.actions[action](message.payload);
         }
       }

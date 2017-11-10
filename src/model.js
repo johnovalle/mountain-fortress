@@ -1,7 +1,9 @@
 import Dispatcher from './dispatcher';
 
 const model = {
-  state: {},
+  state: {
+    currentScene: null
+  },
   scenes: {},
   levels: {}, //This might not even need to be here
   addScene(name, onEnter, controllerMap) {
@@ -17,6 +19,20 @@ const model = {
     }else{
       console.error(`Scene with the name ${name} already exists`);
     }
+  },
+  changeScene(scene){
+    this.state.currentScene = this.scenes[scene];
+    this.state.currentScene.onEnter();
+  },
+  handleKeyPress(key) {
+    console.log(key)
+    let request;
+    if(typeof this.state.currentScene.controlMap[key] === "function"){
+      request = this.state.currentScene.controlMap[key]();
+    }
+    if(request){
+        request.action(...request.args);
+    }
   }
 };
 
@@ -25,7 +41,7 @@ const Scene = {
   entities: null,
   onEnter: null,
   controllerMap: null
-}
+};
 let SceneId = 0;
 
 const addScene = (name, onEnter, controllerMap) => {
@@ -40,8 +56,9 @@ const addScene = (name, onEnter, controllerMap) => {
   }else{
     console.error(`Scene with the name ${name} already exists`);
   }
-}
+};
 
-Dispatcher.addAction(model, {name: "Move", trigger(payload) { console.log(payload); } });
+Dispatcher.addAction(model, {name: "Key Press", trigger: model.handleKeyPress});
+
 
 export default model;
