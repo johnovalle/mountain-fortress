@@ -4,6 +4,7 @@ import {spritesheet} from "./sprites";
 import {buildEntityMap} from "./entities";
 import * as MapUtil from "./map-util";
 import Model from "./model";
+import Dispatcher from "./dispatcher";
 
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
@@ -36,3 +37,13 @@ const drawMap = (map) => {
     }
   }
 };
+
+// Let's see where this goes...
+const drawer = {
+  redraw(){
+    draw(Model.state);
+  }
+};
+Dispatcher.addListener(drawer);
+Dispatcher.addAction(drawer, {name: "Change Scene", trigger: drawer.redraw});
+Dispatcher.addAction(drawer, {name: "Player Moved", trigger: drawer.redraw});
