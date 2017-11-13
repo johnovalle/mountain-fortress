@@ -3,13 +3,19 @@ import {ctx} from "./canvas";
 import {spritesheet} from "./sprites";
 import {buildEntityMap} from "./entities";
 import * as MapUtil from "./map-util";
+import Model from "./model";
 
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
+  ctx.save();
   if(state.currentScene.map) { //Temporary
+    let currentCoords = MapUtil.indexToXY(Model.state.player.index);
+    let translateOffset = MapUtil.getTranslation(currentCoords);
+    ctx.translate(translateOffset.x * -spritesheet.tileSize, translateOffset.y * -spritesheet.tileSize);
     drawMap(state.currentScene.map);
     drawEntities(state.currentScene);
   }
+  ctx.restore();
 }
 
 const drawEntities = (level) => { //Temporary

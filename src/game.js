@@ -26,6 +26,7 @@ Model.scenes.start.map = map1;
 Config.currentLevel.mapCols = map1.mapCols;
 Config.currentLevel.mapRows = map1.mapRows;
 Model.scenes.start.entities = [{name: 'player', index: 364, x: 0, y: 0, key: 5 }] //364
+Model.state.player = Model.scenes.start.entities[0];
 // end Temp
 
 Model.changeScene("start");
