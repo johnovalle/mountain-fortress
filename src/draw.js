@@ -15,7 +15,7 @@ const drawMap = (map) => {
     if(tile !== 0 || map.isBG){
       let x = (i % map.mapCols) * spritesheet.tileSize; // index / width of drawing area in tiles * tile size
       let y = Math.floor(i / map.mapCols) * spritesheet.tileSize;
-      let sx = (tile % spritesheet.sheetCols) * spritesheet.sheetSize // tile value against width of tilesheet in tiles * tile size on sheet
+      let sx = (tile % spritesheet.sheetCols) * spritesheet.tileSize // tile value against width of tilesheet in tiles * tile size on sheet
       let sy = Math.floor(tile / spritesheet.sheetCols) * spritesheet.sheetSize;
       ctx.drawImage(spritesheet.sheet, sx, sy, spritesheet.tileSize, spritesheet.tileSize, x, y, spritesheet.tileSize, spritesheet.tileSize);
     }
