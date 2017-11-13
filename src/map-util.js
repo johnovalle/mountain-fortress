@@ -38,3 +38,22 @@ export const getTranslation = (coords) => {
   }
   return offsetCoords;
 };
+
+// This needs to be moved to entities
+export const moveEntity = (entity, key) => {
+  let currentCoords = indexToXY(entity.index);
+  console.log("move entity", key, currentCoords);
+  //send an action to dispatcher telling the draw to refresh
+  if(key === "ArrowUp" && currentCoords.y > 0){
+    entity.index -= 27;
+  }
+  if(key === "ArrowDown" && currentCoords.y < mapHeight - 1){
+    entity.index += 27;
+  }
+  if(key === "ArrowLeft" && currentCoords.x > 0){
+    entity.index -= 1;
+  }
+  if(key === "ArrowRight" && currentCoords.x < 26){
+    entity.index += 1;
+  }
+}

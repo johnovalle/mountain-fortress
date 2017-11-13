@@ -5,7 +5,11 @@ const controllerMaps = {
     "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["play"]}; }
   },
   play: {
-    "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["gameOver"]}; }
+    "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["gameOver"]}; },
+    "ArrowUp": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowUp"]}; },
+    "ArrowDown": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowDown"]}; },
+    "ArrowLeft": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowLeft"]}; },
+    "ArrowRight": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowRight"]}; },
   },
   gameOver: {
     "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["start"]}; }

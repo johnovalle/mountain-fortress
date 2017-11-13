@@ -1,4 +1,5 @@
 import Dispatcher from './dispatcher';
+import {moveEntity} from './map-util';
 
 const model = {
   state: {
@@ -21,6 +22,7 @@ const model = {
     }
   },
   changeScene(scene){
+    // this should send an event to dispatcher to redraw the screen
     console.log("this", this);
     this.state.currentScene = this.scenes[scene];
     this.state.currentScene.onEnter();
@@ -35,6 +37,10 @@ const model = {
     if(request){
         request.action(...request.args);
     }
+  }, // this should be somewhere else
+  movePlayer(key){
+    console.log("move player", key);
+    moveEntity(this.state.player, key);
   }
 };
 
@@ -45,20 +51,6 @@ const Scene = {
   controllerMap: null
 };
 let SceneId = 0;
-
-// const addScene = (name, onEnter, controlMap) => {
-//   if(!game.scenes[name]){
-//     game.scenes[name] = Object.assign({}, Scene, {
-//       id: SceneId,
-//       entities: [],
-//       onEnter,
-//       controlMap
-//     });
-//     SceneId++;
-//   }else{
-//     console.error(`Scene with the name ${name} already exists`);
-//   }
-// };
 
 Dispatcher.addAction(model, {name: "Key Press", trigger: model.handleKeyPress.bind(model)});
 
