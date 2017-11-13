@@ -1,4 +1,5 @@
 export default {
-  canvasHeight: 500,
-  canvasWidth: 700
+  canvasHeight: 256,
+  canvasWidth: 256,
+  currentLevel: {}
 };

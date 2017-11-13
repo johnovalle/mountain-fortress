@@ -1,12 +1,21 @@
 import Config from "./config";
 import {ctx} from "./canvas";
 import {spritesheet} from "./sprites";
+import {buildEntityMap} from "./entities";
+import * as MapUtil from "./map-util";
 
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
   if(state.currentScene.map) { //Temporary
     drawMap(state.currentScene.map);
+    drawEntities(state.currentScene);
   }
+}
+
+const drawEntities = (level) => { //Temporary
+  buildEntityMap(level);
+  console.log("entitiesMap", level.entitiesMap);
+  drawMap(level.entitiesMap);
 }
 
 const drawMap = (map) => {
