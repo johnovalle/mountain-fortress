@@ -22,7 +22,9 @@ export const draw = (state) => {
 const drawEntities = (level) => { //Temporary
   buildEntityMap(level);
   console.log("entitiesMap", level.entitiesMap);
-  drawMap(level.entitiesMap);
+  // drawMap(level.entitiesMap);
+  // need to draw entities by X and Y values so that I can animate them,
+  // probably also need to store the offset as X and Y so the screen shift will also be smooth
 }
 
 const drawMap = (map) => {

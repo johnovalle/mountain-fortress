@@ -3,7 +3,9 @@ import {moveEntity} from './map-util';
 
 const model = {
   state: {
-    currentScene: null
+    currentScene: null,
+    lastMoveFinished: true,
+    playerMoved: false
   },
   scenes: {},
   levels: {}, //This might not even need to be here
@@ -42,6 +44,8 @@ const model = {
   movePlayer(key){
     console.log("move player", key);
     moveEntity(this.state.player, key);
+    this.state.playerMoved = true;
+    this.state.lastMoveFinished = false;
     Dispatcher.sendMessage({action: "Player Moved", payload: this.state.currentScene});
   }
 };
