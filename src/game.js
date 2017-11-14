@@ -6,6 +6,7 @@ import {loadSpritesheet} from "./sprites";
 import {draw} from "./draw";
 import {map1} from "./maps";
 import Config from "./config";
+import * as MapUtil from "./map-util";
 Canvas.attachCanvas(document.body);
 
 //console.log(Model);
@@ -25,7 +26,8 @@ Dispatcher.addListener(Model);
 Model.scenes.play.map = map1;
 Config.currentLevel.mapCols = map1.mapCols;
 Config.currentLevel.mapRows = map1.mapRows;
-Model.scenes.play.entities = [{name: 'player', index: 364, x: 0, y: 0, key: 5 }] //364
+Model.scenes.play.entities = [{name: 'player', index: 364, x: 416, y: 416, key: 5 }] //364
+console.log("XY",MapUtil.indexTrueToXY(364));
 Model.state.player = Model.scenes.play.entities[0];
 // end Temp
 
@@ -38,7 +40,7 @@ loadSpritesheet("mountain-fortress.png", 32, 256, ()=>{
 })
 
 const run = () => {
-  if(!game.state.lastMoveFinished){
+  if(!Model.state.lastMoveFinished){
         update(Model.state);
         draw(Model.state);
   }
@@ -52,16 +54,24 @@ function update(state){
     // this probably should be in it's own function
     if(state.playerMoved){
         state.playerMoved = false;
-        moveEntities(state);
     }
 
-    for(let i = 0; i < state.entities.length; i++){
-        let entity = state.entities[i];
+    for(let i = 0; i < state.currentScene.entities.length; i++){
+        let entity = state.currentScene.entities[i];
         if(entity.x != entity.nextX){
-            entity.x += moveAniSpeed * entity.lastMoveX; //change the direction
+            if(entity.x < entity.nextX) {
+              entity.x += moveAniSpeed;
+            } else {
+              entity.x -= moveAniSpeed;
+            }
+
         }
         if(entity.y != entity.nextY){
-            entity.y += moveAniSpeed * entity.lastMoveY;
+          if(entity.y < entity.nextY) {
+            entity.y += moveAniSpeed;
+          } else {
+            entity.y -= moveAniSpeed;
+          }
         }
     }
     animationCounter += moveAniSpeed;

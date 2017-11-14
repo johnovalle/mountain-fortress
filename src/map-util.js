@@ -11,6 +11,12 @@ export const indexToXY = (index) => {
   return {x, y};
 };
 
+export const indexTrueToXY = (index) => {
+  let x = (index % 27) * 32;
+  let y = Math.floor(index / 27) * 32;
+  return {x, y};
+};
+
 export const xyToIndex = (coords) => {
   return (coords.y*27) + coords.x;
 };
@@ -42,18 +48,26 @@ export const getTranslation = (coords) => {
 // This needs to be moved to entities
 export const moveEntity = (entity, key) => {
   let currentCoords = indexToXY(entity.index);
-  console.log("move entity", key, currentCoords);
+  console.log("before move entity", key, currentCoords);
   //send an action to dispatcher telling the draw to refresh
+  entity.nextY = entity.y;
+  entity.nextX = entity.x;
   if(key === "ArrowUp" && currentCoords.y > 0){
     entity.index -= 27;
+    entity.nextY -= 32;
   }
   if(key === "ArrowDown" && currentCoords.y < mapHeight - 1){
     entity.index += 27;
+    entity.nextY += 32;
   }
   if(key === "ArrowLeft" && currentCoords.x > 0){
     entity.index -= 1;
+    entity.nextX -= 32;
   }
   if(key === "ArrowRight" && currentCoords.x < 26){
     entity.index += 1;
+    entity.nextX += 32;
   }
+  console.log(entity);
+
 }
