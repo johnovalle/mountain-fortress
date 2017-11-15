@@ -14,7 +14,7 @@ const dispatcher = {
     console.log(listener);
   },
   sendMessage(message){
-    console.log("received message:", message);
+    //sconsole.log("received message:", message);
     for(let i = 0; i < this.listeners.length; i++){
       let listener = this.listeners[i];
       //for(let action in listener.actions){

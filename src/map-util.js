@@ -44,7 +44,26 @@ export const getTranslation = (coords) => {
   }
   return offsetCoords;
 };
+// just to get this to work, this all needs to be completely rewritten
+export const constrainCameraTranslation = (player) => {
+  let coords = {x: 0, y: 0};
+  if(player.x < 128){
+    coords.x = 0;
+  }else if (player.x > 704) {
+    coords.x = -576; //-(22 - 4) * 32;
+  } else {
+    coords.x = -(player.x - 128);
+  }
 
+  if(player.y < 128){
+    coords.y = 0;
+  }else if(player.y > 704) {
+    coords.y = -576; //-(22 - 4) * 32;
+  } else {
+    coords.y = -(player.y - 128);
+  }
+  return coords;
+};
 // This needs to be moved to entities
 export const moveEntity = (entity, key) => {
   let currentCoords = indexToXY(entity.index);

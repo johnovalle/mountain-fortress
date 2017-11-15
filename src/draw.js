@@ -66,23 +66,17 @@ const drawer = {
     setCameraOffset();
     draw(Model.state);
   },
-  xdraw(){
-  },
   updateCamera(xA, yA){
-    console.log("called 1");
     translateOffset.x += xA;
     translateOffset.y += yA;
   },
   updateCameraX(xA){
-    console.log("called 2");
-
-    //console.log(translateOffset.x);
     translateOffset.x -= xA;
-    //console.log(translateOffset.x);
+    translateOffset = MapUtil.constrainCameraTranslation(Model.state.player);
   },
   updateCameraY(yA){
-    console.log("called 3");
     translateOffset.y -= yA;
+    translateOffset = MapUtil.constrainCameraTranslation(Model.state.player);
   }
 };
 Dispatcher.addListener(drawer);
