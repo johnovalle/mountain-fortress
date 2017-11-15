@@ -17,12 +17,12 @@ const dispatcher = {
     console.log("received message:", message);
     for(let i = 0; i < this.listeners.length; i++){
       let listener = this.listeners[i];
-      for(let action in listener.actions){
+      //for(let action in listener.actions){
         if(listener.actions.hasOwnProperty(message.action)){
           //console.log(action);
-          listener.actions[action](message.payload);
+          listener.actions[message.action](message.payload);
         }
-      }
+      //}
     }
   }
 };

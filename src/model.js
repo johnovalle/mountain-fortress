@@ -25,7 +25,8 @@ const model = {
   },
   changeScene(scene){
     // this should send an event to dispatcher to redraw the screen
-    console.log("this", this);
+    //console.log("this", this);
+    console.log("change scene");
     this.state.currentScene = this.scenes[scene];
     this.state.currentScene.onEnter();
     Dispatcher.sendMessage({action: "Change Scene", payload: this.state.currentScene});

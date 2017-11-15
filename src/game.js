@@ -61,16 +61,20 @@ function update(state){
         if(entity.x != entity.nextX){
             if(entity.x < entity.nextX) {
               entity.x += moveAniSpeed;
+              Dispatcher.sendMessage({action: "Update CameraX", payload: moveAniSpeed}); //This is not the best way to do this but let's just see if it works
             } else {
               entity.x -= moveAniSpeed;
+              Dispatcher.sendMessage({action: "Update CameraX", payload: -moveAniSpeed});
             }
 
         }
         if(entity.y != entity.nextY){
           if(entity.y < entity.nextY) {
             entity.y += moveAniSpeed;
+            Dispatcher.sendMessage({action: "Update CameraY", payload: moveAniSpeed});
           } else {
             entity.y -= moveAniSpeed;
+            Dispatcher.sendMessage({action: "Update CameraY", payload: -moveAniSpeed});
           }
         }
     }
