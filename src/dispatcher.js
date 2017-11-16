@@ -20,7 +20,7 @@ const dispatcher = {
       //for(let action in listener.actions){
         if(listener.actions.hasOwnProperty(message.action)){
           //console.log(action);
-          listener.actions[message.action](message.payload);
+          listener.actions[message.action](...message.payload);
         }
       //}
     }

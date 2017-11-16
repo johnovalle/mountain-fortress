@@ -16,7 +16,7 @@ Model.addScene("gameOver", ()=>{ console.log("enter game over scene"); }, Contro
 Model.addScene("play", ()=>{ console.log("enter play scene"); }, ControllerMaps.play );
 
 addEventListener("keydown", (event) => {
-    Dispatcher.sendMessage({action: "Key Press", payload: event.key});
+    Dispatcher.sendMessage({action: "Key Press", payload: [event.key]});
 });
 
 Dispatcher.addListener(Model);
@@ -58,24 +58,28 @@ function update(state){
 
     for(let i = 0; i < state.currentScene.entities.length; i++){
         let entity = state.currentScene.entities[i];
+        let moveX, moveY;
         if(entity.x != entity.nextX){
             if(entity.x < entity.nextX) {
               entity.x += moveAniSpeed;
-              Dispatcher.sendMessage({action: "Update CameraX", payload: moveAniSpeed}); //This is not the best way to do this but let's just see if it works
+              moveX = moveAniSpeed;
             } else {
               entity.x -= moveAniSpeed;
-              Dispatcher.sendMessage({action: "Update CameraX", payload: -moveAniSpeed});
+              moveX = -moveAniSpeed;
             }
-
         }
+        
         if(entity.y != entity.nextY){
           if(entity.y < entity.nextY) {
             entity.y += moveAniSpeed;
-            Dispatcher.sendMessage({action: "Update CameraY", payload: moveAniSpeed});
+            moveY = moveAniSpeed;
           } else {
             entity.y -= moveAniSpeed;
-            Dispatcher.sendMessage({action: "Update CameraY", payload: -moveAniSpeed});
+            moveY = -moveAniSpeed;
           }
+        }
+        if(entity.name === 'player') {
+          Dispatcher.sendMessage({action: "Update Camera", payload: [moveX, moveY]});
         }
     }
     animationCounter += moveAniSpeed;

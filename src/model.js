@@ -29,7 +29,7 @@ const model = {
     console.log("change scene");
     this.state.currentScene = this.scenes[scene];
     this.state.currentScene.onEnter();
-    Dispatcher.sendMessage({action: "Change Scene", payload: this.state.currentScene});
+    Dispatcher.sendMessage({action: "Change Scene", payload: [this.state.currentScene]});
   },
   handleKeyPress(key) {
     console.log(key)
@@ -47,7 +47,7 @@ const model = {
     moveEntity(this.state.player, key);
     this.state.playerMoved = true;
     this.state.lastMoveFinished = false;
-    Dispatcher.sendMessage({action: "Player Moved", payload: this.state.currentScene});
+    Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
   }
 };
 

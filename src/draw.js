@@ -69,18 +69,9 @@ const drawer = {
   updateCamera(xA, yA){
     translateOffset.x += xA;
     translateOffset.y += yA;
-  },
-  updateCameraX(xA){
-    translateOffset.x -= xA;
     translateOffset = MapUtil.constrainCameraTranslation(Model.state.player);
   },
-  updateCameraY(yA){
-    translateOffset.y -= yA;
-    translateOffset = MapUtil.constrainCameraTranslation(Model.state.player);
-  }
 };
 Dispatcher.addListener(drawer);
 Dispatcher.addAction(drawer, {name: "Change Scene", trigger: drawer.redraw});
-//Dispatcher.addAction(drawer, {name: "Player Moved", trigger: drawer.xdraw});
-Dispatcher.addAction(drawer, {name: "Update CameraX", trigger: drawer.updateCameraX});
-Dispatcher.addAction(drawer, {name: "Update CameraY", trigger: drawer.updateCameraY});
+Dispatcher.addAction(drawer, {name: "Update Camera", trigger: drawer.updateCamera});
