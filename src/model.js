@@ -44,10 +44,12 @@ const model = {
   }, // this should be somewhere else
   movePlayer(key){
     console.log("move player", key);
-    moveEntity(this.state.player, key);
-    this.state.playerMoved = true;
-    this.state.lastMoveFinished = false;
-    Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
+    if (!this.state.playerMoved && this.state.lastMoveFinished) {
+      moveEntity(this.state.player, key);
+      this.state.playerMoved = true;
+      this.state.lastMoveFinished = false;
+      Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
+    }
   }
 };
 
