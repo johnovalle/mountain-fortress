@@ -34,8 +34,8 @@ Model.state.player = Model.scenes.play.entities[0];
 Model.changeScene("start");
 
 console.log(Model);
-
-loadSpritesheet("mountain-fortress.png", 32, 256, ()=>{
+//This isn't exactly right but for now I'll assume all sheets within a given project will have the same tileSize
+loadSpritesheet("mountain-fortress.png", Config.tileSize, 256, ()=>{
   run();
 })
 
@@ -49,7 +49,6 @@ const run = () => {
 
 // Refactor before proceeding
 var animationCounter = 0;
-var moveAniSpeed =  2;
 function update(state){
     // this probably should be in it's own function
     if(state.playerMoved){
@@ -61,29 +60,29 @@ function update(state){
         let moveX, moveY;
         if(entity.x != entity.nextX){
             if(entity.x < entity.nextX) {
-              entity.x += moveAniSpeed;
-              moveX = moveAniSpeed;
+              entity.x += Config.moveAniSpeed;
+              moveX = Config.moveAniSpeed;
             } else {
-              entity.x -= moveAniSpeed;
-              moveX = -moveAniSpeed;
+              entity.x -= Config.moveAniSpeed;
+              moveX = -Config.moveAniSpeed;
             }
         }
-        
+
         if(entity.y != entity.nextY){
           if(entity.y < entity.nextY) {
-            entity.y += moveAniSpeed;
-            moveY = moveAniSpeed;
+            entity.y += Config.moveAniSpeed;
+            moveY = Config.moveAniSpeed;
           } else {
-            entity.y -= moveAniSpeed;
-            moveY = -moveAniSpeed;
+            entity.y -= Config.moveAniSpeed;
+            moveY = -Config.moveAniSpeed;
           }
         }
         if(entity.name === 'player') {
           Dispatcher.sendMessage({action: "Update Camera", payload: [moveX, moveY]});
         }
     }
-    animationCounter += moveAniSpeed;
-    if(animationCounter === 32){
+    animationCounter += Config.moveAniSpeed;
+    if(animationCounter === Config.tileSize){
         animationCounter = 0;
         state.lastMoveFinished = true;
     }

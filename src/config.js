@@ -1,5 +1,7 @@
 export default {
   canvasHeight: 288,
   canvasWidth: 288,
-  currentLevel: {}
+  currentLevel: {},
+  moveAniSpeed: 2,
+  tileSize: 32,
 };
