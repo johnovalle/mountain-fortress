@@ -24,10 +24,11 @@ Dispatcher.addListener(Model);
 
 // Temp!!!
 Model.scenes.play.map = map1;
-Config.currentLevel.mapCols = map1.mapCols;
-Config.currentLevel.mapRows = map1.mapRows;
+Config.mapCols = map1.mapCols; //Mutate through dispatcher?
+Config.setMaxOffsetX();
+Config.mapRows = map1.mapRows;
+Config.setMaxOffsetY();
 Model.scenes.play.entities = [{name: 'player', index: 364, x: 416, y: 416, key: 5 }] //364
-console.log("XY",MapUtil.indexTrueToXY(364));
 Model.state.player = Model.scenes.play.entities[0];
 // end Temp
 
