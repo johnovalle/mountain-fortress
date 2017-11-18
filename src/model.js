@@ -26,14 +26,14 @@ const model = {
   changeScene(scene){
     // this should send an event to dispatcher to redraw the screen
     //console.log("this", this);
-    console.log("change scene");
+    // sconsole.log("change scene");
     this.state.currentScene = this.scenes[scene];
     this.state.currentScene.onEnter();
     Dispatcher.sendMessage({action: "Change Scene", payload: [this.state.currentScene]});
   },
   handleKeyPress(key) {
-    console.log(key)
-    console.log("this", this, this.state);
+    // console.log(key)
+    // console.log("this", this, this.state);
     let request;
     if(typeof this.state.currentScene.controlMap[key] === "function"){
       request = this.state.currentScene.controlMap[key]();
@@ -43,7 +43,7 @@ const model = {
     }
   }, // this should be somewhere else
   movePlayer(key){
-    console.log("move player", key);
+    // console.log("move player", key);
     if (!this.state.playerMoved && this.state.lastMoveFinished) {
       moveEntity(this.state.player, key);
       this.state.playerMoved = true;

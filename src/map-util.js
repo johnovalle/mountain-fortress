@@ -62,7 +62,7 @@ export const constrainCameraTranslation = (player) => {
 // This needs to be moved to entities
 export const moveEntity = (entity, key) => {
   let currentCoords = indexToXY(entity.index);
-  console.log("before move entity", key, currentCoords);
+  // console.log("before move entity", key, currentCoords);
   //send an action to dispatcher telling the draw to refresh
   entity.nextY = entity.y;
   entity.nextX = entity.x;
@@ -82,6 +82,6 @@ export const moveEntity = (entity, key) => {
     entity.index += 1;
     entity.nextX += Config.tileSize;
   }
-  console.log(entity);
+  // console.log(entity);
 
 }
