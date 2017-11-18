@@ -20,14 +20,10 @@ addEventListener("keydown", (event) => {
 });
 
 Dispatcher.addListener(Model);
-// Dispatcher.sendMessage({action: "Key Press", payload: "ArrowUp"});
 
 // Temp!!!
 Model.scenes.play.map = map1;
-Config.mapCols = map1.mapCols; //Mutate through dispatcher?
-Config.setMaxOffsetX();
-Config.mapRows = map1.mapRows;
-Config.setMaxOffsetY();
+Dispatcher.sendMessage({action: "Change Map", payload: [map1]});
 Model.scenes.play.entities = [{name: 'player', index: 364, x: 416, y: 416, key: 5 }] //364
 Model.state.player = Model.scenes.play.entities[0];
 // end Temp

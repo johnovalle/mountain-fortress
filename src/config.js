@@ -1,4 +1,6 @@
-export default {
+import Dispatcher from "./dispatcher";
+
+const config = {
   canvasHeight: 288,
   canvasWidth: 288,
   moveAniSpeed: 4,
@@ -13,5 +15,15 @@ export default {
   },
   setMaxOffsetY(){
     this.maxOffsetY = this.mapRows - 1 - this.rowsToShow;
+  },
+  changeMap(newMap){
+    this.mapCols = newMap.mapCols;
+    this.setMaxOffsetX();
+    this.mapRows = newMap.mapRows;
+    this.setMaxOffsetY();
   }
 };
+export default config;
+
+Dispatcher.addListener(config);
+Dispatcher.addAction(config, {name: "Change Map", trigger: config.changeMap.bind(config)});
