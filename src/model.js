@@ -61,6 +61,7 @@ const Scene = {
 };
 let SceneId = 0;
 
+Dispatcher.addListener(model);
 Dispatcher.addAction(model, {name: "Key Press", trigger: model.handleKeyPress.bind(model)});
 
 

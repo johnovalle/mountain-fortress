@@ -9,7 +9,6 @@ import Config from "./config";
 import * as MapUtil from "./map-util";
 Canvas.attachCanvas(document.body);
 
-//console.log(Model);
 
 Model.addScene("start", ()=>{ console.log("enter start scene"); }, ControllerMaps.start );
 Model.addScene("gameOver", ()=>{ console.log("enter game over scene"); }, ControllerMaps.gameOver );
@@ -18,8 +17,6 @@ Model.addScene("play", ()=>{ console.log("enter play scene"); }, ControllerMaps.
 addEventListener("keydown", (event) => {
     Dispatcher.sendMessage({action: "Key Press", payload: [event.key]});
 });
-
-Dispatcher.addListener(Model);
 
 // Temp!!!
 Model.scenes.play.map = map1;
@@ -30,8 +27,8 @@ Model.state.player = Model.scenes.play.entities[0];
 
 Model.changeScene("start");
 
-console.log(Model);
-//This isn't exactly right but for now I'll assume all sheets within a given project will have the same tileSize
+// console.log(Model);
+// This isn't exactly right but for now I'll assume all sheets within a given project will have the same tileSize
 loadSpritesheet("mountain-fortress.png", Config.tileSize, 256, ()=>{
   run();
 })
@@ -44,43 +41,45 @@ const run = () => {
   requestAnimationFrame(run);
 };
 
-// Refactor before proceeding
 var animationCounter = 0;
 function update(state){
-    // this probably should be in it's own function
-    if(state.playerMoved){
-        state.playerMoved = false;
-    }
+  animateEntityMovement(state);
+}
 
-    for(let i = 0; i < state.currentScene.entities.length; i++){
-        let entity = state.currentScene.entities[i];
-        let moveX, moveY;
-        if(entity.x != entity.nextX){
-            if(entity.x < entity.nextX) {
-              entity.x += Config.moveAniSpeed;
-              moveX = Config.moveAniSpeed;
-            } else {
-              entity.x -= Config.moveAniSpeed;
-              moveX = -Config.moveAniSpeed;
-            }
-        }
+const animateEntityMovement = (state) => {
+  if(state.playerMoved){
+      state.playerMoved = false;
+  }
 
-        if(entity.y != entity.nextY){
-          if(entity.y < entity.nextY) {
-            entity.y += Config.moveAniSpeed;
-            moveY = Config.moveAniSpeed;
+  for(let i = 0; i < state.currentScene.entities.length; i++){
+      let entity = state.currentScene.entities[i];
+      let moveX, moveY;
+      if(entity.x != entity.nextX){
+          if(entity.x < entity.nextX) {
+            entity.x += Config.moveAniSpeed;
+            moveX = Config.moveAniSpeed;
           } else {
-            entity.y -= Config.moveAniSpeed;
-            moveY = -Config.moveAniSpeed;
+            entity.x -= Config.moveAniSpeed;
+            moveX = -Config.moveAniSpeed;
           }
+      }
+
+      if(entity.y != entity.nextY){
+        if(entity.y < entity.nextY) {
+          entity.y += Config.moveAniSpeed;
+          moveY = Config.moveAniSpeed;
+        } else {
+          entity.y -= Config.moveAniSpeed;
+          moveY = -Config.moveAniSpeed;
         }
-        if(entity.name === 'player') {
-          Dispatcher.sendMessage({action: "Update Camera", payload: [moveX, moveY]});
-        }
-    }
-    animationCounter += Config.moveAniSpeed;
-    if(animationCounter === Config.tileSize){
-        animationCounter = 0;
-        state.lastMoveFinished = true;
-    }
+      }
+      if(entity.name === 'player') {
+        Dispatcher.sendMessage({action: "Update Camera", payload: [moveX, moveY]});
+      }
+  }
+  animationCounter += Config.moveAniSpeed;
+  if(animationCounter === Config.tileSize){
+      animationCounter = 0;
+      state.lastMoveFinished = true;
+  }
 }
