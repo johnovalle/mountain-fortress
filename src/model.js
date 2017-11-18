@@ -1,5 +1,6 @@
 import Dispatcher from './dispatcher';
-import {moveEntity} from './map-util';
+import {moveEntity, checkIndex} from './map-util';
+import { tileDictionary } from './tiles';
 
 const model = {
   state: {
@@ -45,9 +46,19 @@ const model = {
   movePlayer(key){
     // console.log("move player", key);
     if (!this.state.playerMoved && this.state.lastMoveFinished) {
-      moveEntity(this.state.player, key);
-      this.state.playerMoved = true;
-      this.state.lastMoveFinished = false;
+      //check the new position and return a values
+      //if value is empty go there
+      //if there is something there handle it (stairs, monster, item);
+
+      let targetAtIndex = checkIndex(this.state.player, key);
+      if(targetAtIndex.passible){
+        moveEntity(this.state.player, key);
+        this.state.playerMoved = true;
+        this.state.lastMoveFinished = false;
+      }else{
+        //handle items, stairs, monsters
+      }
+
       Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
     }
   }

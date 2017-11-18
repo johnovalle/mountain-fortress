@@ -1,4 +1,5 @@
 import Config from "./config";
+import { tileDictionary } from "./tiles";
 
 export const indexToXY = (index) => {
   let x = index % Config.mapCols;
@@ -83,5 +84,23 @@ export const moveEntity = (entity, key) => {
     entity.nextX += Config.tileSize;
   }
   // console.log(entity);
+};
 
-}
+export const checkIndex = (entity, key) => { //Think about drying this up
+  let currentCoords = indexToXY(entity.index);
+  let newIndex;
+  if(key === "ArrowUp" && currentCoords.y > 0){
+    newIndex = entity.index - Config.mapCols;
+  }
+  if(key === "ArrowDown" && currentCoords.y < Config.mapRows - 1){
+    newIndex = entity.index + Config.mapCols;
+  }
+  if(key === "ArrowLeft" && currentCoords.x > 0){
+    newIndex = entity.index - 1;
+  }
+  if(key === "ArrowRight" && currentCoords.x < Config.mapCols - 1){
+    newIndex = entity.index + 1;
+  }
+   //This wont handle entities at the moment, should I check against two maps or fuse them?
+  return tileDictionary[Config.currentMap.grid[newIndex]];
+};

@@ -5,6 +5,7 @@ const config = {
   canvasWidth: 288,
   moveAniSpeed: 4,
   tileSize: 32,
+  currentMap: null,
   mapCols: 0,
   mapRows: 0,
   rowsToShow: 4, //There should probably also be a colsToShow in cause I want to display a non-square play area
@@ -17,6 +18,7 @@ const config = {
     this.maxOffsetY = this.mapRows - 1 - this.rowsToShow;
   },
   changeMap(newMap){
+    this.currentMap = newMap;
     this.mapCols = newMap.mapCols;
     this.setMaxOffsetX();
     this.mapRows = newMap.mapRows;

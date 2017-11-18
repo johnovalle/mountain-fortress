@@ -9,7 +9,6 @@ import Config from "./config";
 import * as MapUtil from "./map-util";
 Canvas.attachCanvas(document.body);
 
-
 Model.addScene("start", ()=>{ console.log("enter start scene"); }, ControllerMaps.start );
 Model.addScene("gameOver", ()=>{ console.log("enter game over scene"); }, ControllerMaps.gameOver );
 Model.addScene("play", ()=>{ console.log("enter play scene"); }, ControllerMaps.play );
@@ -29,7 +28,7 @@ Model.changeScene("start");
 
 // console.log(Model);
 // This isn't exactly right but for now I'll assume all sheets within a given project will have the same tileSize
-loadSpritesheet("mountain-fortress.png", Config.tileSize, 256, ()=>{
+loadSpritesheet("mountain-fortress.png", 32, 256, () => { 
   run();
 })
 
