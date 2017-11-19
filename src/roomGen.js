@@ -11,7 +11,7 @@ function generateRoom(array, cols, rows){
   let roomHeight = Math.ceil(Math.random() * maxHeight) + minHeight;
   console.log(roomWidth, roomHeight);
 
-  let roomStart = 28;
+  let roomStart = getRoomStart(array, cols, rows, roomWidth, roomHeight);;
   let roomEnd = roomStart + roomWidth;
   for(let i = 0; i <= roomWidth; i++){
     let topIndex = i + roomStart;
@@ -26,4 +26,31 @@ function generateRoom(array, cols, rows){
     array[rightIndex] = 1;
   }
   // getRoomStart();
+}
+
+
+const indexToXY = (index, cols) => { // duplicate refactor
+  let x = index % cols;
+  let y = Math.floor(index / cols);
+  return {x, y};
+};
+
+function getRoomStart(array, cols, rows, roomWidth, roomHeight){
+  let start = null;
+  let foundStart = false;
+  let tries = 0;
+  while(!foundStart) {
+    let index = Math.floor(Math.random() * array.length);
+    let coords = indexToXY(index, cols);
+    console.log(index, coords);
+    if(coords.x + roomWidth < cols && coords.y + roomHeight < rows){
+      foundStart = true;
+      start = index;
+    }
+    tries++;
+    if(tries > 20){
+      foundStart = true; // or break?
+    }
+  }
+  return start;
 }
