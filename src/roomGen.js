@@ -1,7 +1,7 @@
 let mapCols = 27;
 let mapRows = 27;
-let rawArray = Array(mapCols * mapRows).fill(0);
-// currently drawing the rooms in but actually I think it makes more sense to carve them by setting the fill to 1;
+let rawArray = Array(mapCols * mapRows).fill(1);
+
 function populateMap(array, cols, rows){
   let roomsGenerated = 0;
   let tries = 0;
@@ -30,43 +30,44 @@ function generateRoom(array, cols, rows){
   var roomEnd = roomStart + roomWidth;
   let success = true;
   let validIndicies = [];
-  for(let i = 0; i <= roomWidth; i++){
-    let topIndex = i + roomStart;
-    let bottomIndex =  topIndex + (roomHeight * cols);
-    if(array[topIndex] === 0 && array[bottomIndex] === 0){
-      validIndicies.push(topIndex);
-      validIndicies.push(bottomIndex);
-    } else {
-      success = false;
-      break;
+  let lastIndex;
+  for(let i = 0; i < roomWidth; i++){
+    for(let j = 0; j < roomHeight; j++){
+      let index = roomStart + i + (j * cols);
+      if(array[index] === 1) {
+        if(i === 0 && array[index-1] !== 1) { //left row down touching
+          success = false;
+          break;
+        } else if (i === roomWidth - 1 && array[index+1] !== 1) { //right row down touching
+          success = false;
+          break;
+        }  else if (j === 0 && array[(index - cols)] !== 1) { //top row touching
+          success = false;
+          break;
+        }  else if (j === roomHeight - 1 && array[(index + cols)] !== 1) { //bottom row touching
+          success = false;
+          break;
+        }
+        validIndicies.push(index);
+        lastIndex = index;
+      } else {
+        success = false;
+        break;
+      }
     }
-
   }
-  for(let i = 1; i < roomHeight; i++){
-    let leftIndex = (i * cols) + roomStart;
-    let rightIndex =  leftIndex + roomWidth; //roomEnd  + (i * cols);
 
-    if(array[leftIndex] === 0 && array[rightIndex] === 0){
-      validIndicies.push(leftIndex);
-      validIndicies.push(rightIndex);
-    } else {
-      success = false;
-      break;
-    }
-
-  }
   if (success) {
     for(let i = 0; i < validIndicies.length; i++){
-      array[validIndicies[i]] = 1;
+      array[validIndicies[i]] = 0;
     }
-    return {topLeft: roomStart, bottomRight: roomStart + (roomHeight * 27) + roomWidth};
+    return {topLeft: roomStart, bottomRight: lastIndex};
   }else{
     return false;
   }
 }
 
-
-const indexToXY = (index, cols) => { // duplicate refactor
+const indexToXY = (index, cols) => {
   let x = index % cols;
   let y = Math.floor(index / cols);
   return {x, y};
@@ -79,8 +80,10 @@ function getRoomStart(array, cols, rows, roomWidth, roomHeight){
   while(!foundStart) {
     let index = Math.floor(Math.random() * array.length);
     let coords = indexToXY(index, cols);
-    console.log(index, coords);
-    if(coords.x + roomWidth < cols && coords.y + roomHeight < rows && array[index] === 0){
+
+    // makes sure room doesn't start or end on map edge
+    if(coords.x + roomWidth < cols - 1 && coords.y + roomHeight < rows - 1 && coords.x > 0 && coords.y > 0){
+      console.log(index, coords);
       foundStart = true;
       start = index;
     }
