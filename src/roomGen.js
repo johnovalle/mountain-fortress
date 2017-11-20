@@ -1,15 +1,16 @@
 let mapCols = 27;
 let mapRows = 27;
 let rawArray = Array(mapCols * mapRows).fill(1);
-let generatedRooms = {};
+let generatedRooms = [];
 
-function populateMap(array, cols, rows){
+function populateMap(array, cols, rows) {
   let roomsGenerated = 0;
   let tries = 0;
-  while((roomsGenerated < 7 && tries < 300) || tries > 300){
+  while ((roomsGenerated < 7 && tries < 300) || tries > 300) {
     tries++;
     let room = generateRoom(array, cols, rows);
-    if(room){
+    if (room) {
+      room.id = roomsGenerated;
       generatedRooms[roomsGenerated] = room;
       roomsGenerated++;
       console.log(generatedRooms);
@@ -35,7 +36,7 @@ function generateRoom(array, cols, rows){
   for(let i = 0; i < roomWidth; i++){
     for(let j = 0; j < roomHeight; j++){
       let index = roomStart + i + (j * cols);
-      if(array[index] === 1) { 
+      if(array[index] === 1) {
         if(i === 0 && array[index-minDistAppart] !== 1) { //left row down touching
           success = false;
           break;
@@ -100,28 +101,72 @@ const xyToIndex = (coords, cols) => {
   return (coords.y*cols) + coords.x;
 };
 
-function connectRooms(array, cols, rows, rooms){
-  for(let room in rooms){
+function connectRooms(array, cols, rows, rooms) {
+  for (let i = 0; i < rooms.length; i++) {
+    let room = rooms[i];
     let willBend = Math.random() > 0.51;
     let pathFound = false;
+    let validIndicies = [];
     while (!pathFound) {
+      validIndicies = [];
       let side = Math.random();
       let startingPoint;
       let initalDirection;
-      if(side < 0.25){ //top
-        startingPoint = {x: getPointBetween(room.topLeft.x, room.bottomRight.x), y: room.topLeft.y};
-        initalDirection = {x: 0, y: -1};
-      } else if(side < 0.50){ //bottom
-        startingPoint = {x: getPointBetween(room.topLeft.x, room.bottomRight.x), y: room.bottomRight.y};
-        initalDirection = {x: 0, y: 1};
-      } else if(side < 0.75){ //left
-        startingPoint = {x: getPointBetween(room.topLeft.y, room.bottomRight.y), y: room.topLeft.x};
-        initalDirection = {x: -1, y: 0};
-      } else { //right
-        startingPoint = {x: getPointBetween(room.topLeft.y, room.bottomRight.y), y: room.bottomRight.x};
-        initalDirection = {x: 1, y: 0};
+      if (side < 0.25) {
+        //top
+        startingPoint = {
+          x: getPointBetween(room.topLeft.x, room.bottomRight.x),
+          y: room.topLeft.y,
+        };
+        initalDirection = { x: 0, y: -1 };
+      } else if (side < 0.5) {
+        //bottom
+        startingPoint = {
+          x: getPointBetween(room.topLeft.x, room.bottomRight.x),
+          y: room.bottomRight.y,
+        };
+        initalDirection = { x: 0, y: 1 };
+      } else if (side < 0.75) {
+        //left
+        startingPoint = {
+          x: getPointBetween(room.topLeft.y, room.bottomRight.y),
+          y: room.topLeft.x,
+        };
+        initalDirection = { x: -1, y: 0 };
+      } else {
+        //right
+        startingPoint = {
+          x: getPointBetween(room.topLeft.y, room.bottomRight.y),
+          y: room.bottomRight.x,
+        };
+        initalDirection = { x: 1, y: 0 };
       }
-      // brute force or intelligent?
+      // brute force
+      let chanceToBend = 0.1;
+      let unconnected = true;
+      while(unconnected){
+        startingPoint.x += initalDirection.x;
+        startingPoint.y += initalDirection.y;
+        let currentIndex = xyToIndex(startingPoint, cols);
+        if(startingPoint.x > 0 && startingPoint.y > 0
+        && startingPoint.x < cols && startingPoint.y < rows){
+          if(array[currentIndex] === 1){
+            validIndicies.push(currentIndex);
+          }else if(array[currentIndex] === 0){
+            unconnected = false;
+            pathFound = true;
+          }
+          chanceToBend += 0.1;
+
+        }else{
+          break;
+        }
+      }
+      // intelligent?
+      //let path = findPath(room, rooms);
+    }
+    for (let i = 0; i < validIndicies.length; i++) {
+      array[validIndicies[i]] = 0;
     }
   }
 }
