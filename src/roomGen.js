@@ -72,25 +72,30 @@ function generateRoom(array, cols, rows){
 const indexToXY = (index, cols) => {
   let x = index % cols;
   let y = Math.floor(index / cols);
-  return {x, y};
+  return { x, y };
 };
 
-function getRoomStart(array, cols, rows, roomWidth, roomHeight){
+function getRoomStart(array, cols, rows, roomWidth, roomHeight) {
   let start = null;
   let foundStart = false;
   let tries = 0;
-  while(!foundStart) {
+  while (!foundStart) {
     let index = Math.floor(Math.random() * array.length);
     let coords = indexToXY(index, cols);
 
     // makes sure room doesn't start or end on map edge
-    if(coords.x + roomWidth < cols - 1 && coords.y + roomHeight < rows - 1 && coords.x > 0 && coords.y > 0){
+    if (
+      coords.x + roomWidth < cols - 1 &&
+      coords.y + roomHeight < rows - 1 &&
+      coords.x > 0 &&
+      coords.y > 0
+    ) {
       //console.log(index, coords);
       foundStart = true;
       start = index;
     }
     tries++;
-    if(tries > 20){
+    if (tries > 20) {
       foundStart = true; // or break?
     }
   }
@@ -98,7 +103,7 @@ function getRoomStart(array, cols, rows, roomWidth, roomHeight){
 }
 
 const xyToIndex = (coords, cols) => {
-  return (coords.y*cols) + coords.x;
+  return coords.y * cols + coords.x;
 };
 
 function connectRooms(array, cols, rows, rooms) {
@@ -108,60 +113,9 @@ function connectRooms(array, cols, rows, rooms) {
     let pathFound = false;
     let validIndicies = [];
     while (!pathFound) {
-      validIndicies = [];
-      let side = Math.random();
-      let startingPoint;
-      let initalDirection;
-      if (side < 0.25) {
-        //top
-        startingPoint = {
-          x: getPointBetween(room.topLeft.x, room.bottomRight.x),
-          y: room.topLeft.y,
-        };
-        initalDirection = { x: 0, y: -1 };
-      } else if (side < 0.5) {
-        //bottom
-        startingPoint = {
-          x: getPointBetween(room.topLeft.x, room.bottomRight.x),
-          y: room.bottomRight.y,
-        };
-        initalDirection = { x: 0, y: 1 };
-      } else if (side < 0.75) {
-        //left
-        startingPoint = {
-          x: getPointBetween(room.topLeft.y, room.bottomRight.y),
-          y: room.topLeft.x,
-        };
-        initalDirection = { x: -1, y: 0 };
-      } else {
-        //right
-        startingPoint = {
-          x: getPointBetween(room.topLeft.y, room.bottomRight.y),
-          y: room.bottomRight.x,
-        };
-        initalDirection = { x: 1, y: 0 };
-      }
-      // brute force
-      let chanceToBend = 0.1;
-      let unconnected = true;
-      while(unconnected){
-        startingPoint.x += initalDirection.x;
-        startingPoint.y += initalDirection.y;
-        let currentIndex = xyToIndex(startingPoint, cols);
-        if(startingPoint.x > 0 && startingPoint.y > 0
-        && startingPoint.x < cols && startingPoint.y < rows){
-          if(array[currentIndex] === 1){
-            validIndicies.push(currentIndex);
-          }else if(array[currentIndex] === 0){
-            unconnected = false;
-            pathFound = true;
-          }
-          chanceToBend += 0.1;
 
-        }else{
-          break;
-        }
-      }
+      let path = getPointOnSide(room);
+      validIndicies = getPathBetweenRooms(array, cols, rows, path);
       // intelligent?
       //let path = findPath(room, rooms);
     }
@@ -171,6 +125,68 @@ function connectRooms(array, cols, rows, rooms) {
   }
 }
 
-function getPointBetween(xy1, xy2){ //inclusive
+function getPointOnSide(room){
+  let side = Math.random();
+  let point;
+  let direction;
+  if (side < 0.25) {
+    //top
+    point = {
+      x: getPointBetween(room.topLeft.x, room.bottomRight.x),
+      y: room.topLeft.y,
+    };
+    direction = { x: 0, y: -1 };
+  } else if (side < 0.5) {
+    //bottom
+    point = {
+      x: getPointBetween(room.topLeft.x, room.bottomRight.x),
+      y: room.bottomRight.y,
+    };
+    direction = { x: 0, y: 1 };
+  } else if (side < 0.75) {
+    //left
+    point = {
+      x: getPointBetween(room.topLeft.y, room.bottomRight.y),
+      y: room.topLeft.x,
+    };
+    direction = { x: -1, y: 0 };
+  } else {
+    //right
+    point = {
+      x: getPointBetween(room.topLeft.y, room.bottomRight.y),
+      y: room.bottomRight.x,
+    };
+    direction = { x: 1, y: 0 };
+  }
+  return {point, direction};
+}
+
+function getPathBetweenRooms(array, cols, rows, path){
+  validIndicies = [];
+      // brute force
+  let chanceToBend = 0.1;
+  let unconnected = true;
+  while(unconnected){
+    path.point.x += path.direction.x;
+    path.point.y += path.direction.y;
+    let currentIndex = xyToIndex(path.point, cols);
+    if(path.point.x > 0 && path.point.y > 0
+    && path.point.x < cols && path.point.y < rows){
+      if(array[currentIndex] === 1){
+        validIndicies.push(currentIndex);
+      }else if(array[currentIndex] === 0){
+        unconnected = false;
+        pathFound = true;
+      }
+      chanceToBend += 0.1;
+
+    }else{
+      break;
+    }
+  }
+  return validIndicies;
+}
+
+function getPointBetween(xy1, xy2) { //inclusive
   return Math.floor(Math.random() * (xy2 - xy1 + 1) + xy1);
 }
