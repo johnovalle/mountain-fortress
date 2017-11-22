@@ -113,7 +113,6 @@ function connectRooms(array, cols, rows, rooms) {
     let pathFound = false;
     let validIndicies = [];
     while (!pathFound) {
-
       let path = getPointOnSide(room);
       validIndicies = getPathBetweenRooms(array, cols, rows, path);
       // intelligent?
@@ -146,15 +145,15 @@ function getPointOnSide(room){
   } else if (side < 0.75) {
     //left
     point = {
-      x: getPointBetween(room.topLeft.y, room.bottomRight.y),
-      y: room.topLeft.x,
+      x: room.topLeft.x,
+      y: getPointBetween(room.topLeft.y, room.bottomRight.y),
     };
     direction = { x: -1, y: 0 };
   } else {
     //right
     point = {
-      x: getPointBetween(room.topLeft.y, room.bottomRight.y),
-      y: room.bottomRight.x,
+      x: room.bottomRight.x,
+      y: getPointBetween(room.topLeft.y, room.bottomRight.y),
     };
     direction = { x: 1, y: 0 };
   }
