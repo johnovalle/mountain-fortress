@@ -132,15 +132,16 @@ function connectRooms(array, cols, rows, rooms) {
     let pathFound = false;
     let validIndicies = [];
     let tries = 0;
-    let path = getPointOnSide(room);
-  	array[xyToIndex(path.point, cols)] = 5;
+    //let path = getPointOnSide(room);
+  	//array[xyToIndex(path.point, cols)] = 5;
     // while (!pathFound) {
     //   console.log(tries);
 
 
 
     draw(array);
-    // validIndicies = getPathBetweenRooms(array, cols, rows, path);
+    connectRoomToRoom(room, rooms.filter((x)=> x.id !== room.id));
+    //validIndicies = getPathBetweenRooms(array, cols, rows, path);
     //   if(validIndicies.length > 0){
     //     pathFound = true;
     //   }
@@ -151,7 +152,33 @@ function connectRooms(array, cols, rows, rooms) {
     for (let i = 0; i < validIndicies.length; i++) {
       array[validIndicies[i]] = 7;
     }
+    draw(array);
   }
+}
+function connectRoomToRoom(room, rooms){
+  let randomRoom = rooms[Math.floor(Math.random() * rooms.length)];
+
+  //get side
+  let side;
+  if (randomRoom.topLeft.x > room.bottomRight.x) {
+    side = "right";
+  } else if (randomRoom.bottomRight.x < room.topLeft.x) {
+    side = "left";
+  }
+  //assuming they are parallel
+  if(side === 'left' || side === 'right') {
+    let parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
+                            Math.min(room.bottomRight.y, randomRoom.bottomRight.y));
+    console.log(parallelAxes);
+  }
+
+  console.log(room, rooms, randomRoom);
+  console.log(side);
+}
+
+function range(start, end) {
+  console.log(start, end);
+  return Array(end - start + 1).fill().map((_, idx) => start + idx)
 }
 
 function getPointOnSide(room){
@@ -198,7 +225,7 @@ function getPathBetweenRooms(array, cols, rows, path){
   let testIndex = xyToIndex(path.point, cols);
   array[testIndex] = 5;
   while(unconnected){
-  	debugger;
+
     path.point.x += path.direction.x;
     path.point.y += path.direction.y;
     let currentIndex = xyToIndex(path.point, cols);
@@ -206,6 +233,9 @@ function getPathBetweenRooms(array, cols, rows, path){
     && path.point.x < cols && path.point.y < rows){
       if(array[currentIndex] === 1){
         validIndicies.push(currentIndex);
+        array[currentIndex] = 5;
+        draw(array);
+        debugger;
       }else if(array[currentIndex] === 0){
       	console.log("ran into a zero should end");
         unconnected = false;
@@ -214,6 +244,10 @@ function getPathBetweenRooms(array, cols, rows, path){
       chanceToBend += 0.1;
 
     }else{
+      for(let i = 0; i < validIndicies.length; i++){
+        array[validIndicies[i]] = 1;
+      }
+      draw(array);
     	validIndicies = [];
       break;
     }
