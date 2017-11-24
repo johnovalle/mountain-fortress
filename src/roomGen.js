@@ -6,9 +6,12 @@ let generatedRooms = [];
 let room1 = { topLeft: { x: 18, y: 13 },
     bottomRight: { x: 23, y: 17 },
     id: 0 };
-  let room2 = { topLeft: { x: 6, y: 15 },
+let room2 = { topLeft: { x: 6, y: 15 },
     bottomRight: { x: 9, y: 19 },
     id: 1 };
+let room3 = { topLeft: { x: 8, y: 5 },
+    bottomRight: { x: 11, y: 10 },
+    id: 2 };
 
 function populateMap(array, cols, rows) {
   let roomsGenerated = 0;
@@ -26,6 +29,7 @@ function populateMap(array, cols, rows) {
   //connectRooms(array, cols, rows, generatedRooms);
   drawRoom(array, cols, room1);
   drawRoom(array, cols, room2);
+  // drawRoom(array, cols, room3);
   generatedRooms.push(room1, room2);
   connectRooms(array, cols, rows, generatedRooms);
 }
@@ -140,40 +144,72 @@ function connectRooms(array, cols, rows, rooms) {
 
 
     draw(array);
-    connectRoomToRoom(room, rooms.filter((x)=> x.id !== room.id));
-    //validIndicies = getPathBetweenRooms(array, cols, rows, path);
-    //   if(validIndicies.length > 0){
-    //     pathFound = true;
-    //   }
-    //   // intelligent?
-    //   //let path = findPath(room, rooms);
-    //   tries++;
-    // }
+    let path = connectRoomToRoom(room, rooms.filter((x)=> x.id !== room.id));
+    validIndicies = getPathBetweenRooms(array, cols, rows, path);
+      // if(validIndicies.length > 0){
+      //   pathFound = true;
+      // }
+      // intelligent?
+      //let path = findPath(room, rooms);
+    //  tries++;
+    //}
     for (let i = 0; i < validIndicies.length; i++) {
       array[validIndicies[i]] = 7;
     }
     draw(array);
   }
 }
+
 function connectRoomToRoom(room, rooms){
   let randomRoom = rooms[Math.floor(Math.random() * rooms.length)];
 
   //get side
-  let side;
+  //let side;
+  let direction = {x: 0, y: 0};
+  let point = {};
   if (randomRoom.topLeft.x > room.bottomRight.x) {
-    side = "right";
+    //side = "right";
+    direction.x = 1;
+    point.x = room.bottomRight.x;
   } else if (randomRoom.bottomRight.x < room.topLeft.x) {
-    side = "left";
+    //side = "left";
+    direction.x = -1;
+    point.x = room.topLeft.x;
   }
-  //assuming they are parallel
-  if(side === 'left' || side === 'right') {
-    let parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
+
+  if (randomRoom.topLeft.y > room.bottomRight.y) {
+    // below
+    direction.y = 1;
+    point.y = room.bottomRight.y;
+  } else if (randomRoom.bottomRight.y < room.topLeft.y) {
+    // above
+    direction.y = -1;
+    point.y = room.topLeft.y;
+  }
+
+  //parallel on x axis
+  let parallelAxes = [];
+   //check es6
+  if((direction.x === -1 || direction.x === 1) && direction.y === 0) {
+    parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
                             Math.min(room.bottomRight.y, randomRoom.bottomRight.y));
     console.log(parallelAxes);
+    point.y = parallelAxes[Math.floor(Math.random()*parallelAxes.length)];
+  } //parallel on y axis
+  else if((direction.x === -1 || direction.x === 1) && direction.y === 0) {
+    parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
+                            Math.min(room.bottomRight.y, randomRoom.bottomRight.y));
+    console.log(parallelAxes);
+    point.x = parallelAxes[Math.floor(Math.random()*parallelAxes.length)];
+  } else {
+    console.log(" not parallel");
   }
 
   console.log(room, rooms, randomRoom);
-  console.log(side);
+  console.log(direction);
+
+  return {point, direction};
+
 }
 
 function range(start, end) {
@@ -224,6 +260,7 @@ function getPathBetweenRooms(array, cols, rows, path){
   let unconnected = true;
   let testIndex = xyToIndex(path.point, cols);
   array[testIndex] = 5;
+  console.log(path);
   while(unconnected){
 
     path.point.x += path.direction.x;
