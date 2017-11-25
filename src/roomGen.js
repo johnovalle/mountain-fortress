@@ -9,8 +9,8 @@ let room1 = { topLeft: { x: 18, y: 13 },
 let room2 = { topLeft: { x: 6, y: 15 },
     bottomRight: { x: 9, y: 19 },
     id: 1 };
-let room3 = { topLeft: { x: 8, y: 5 },
-    bottomRight: { x: 11, y: 10 },
+let room3 = { topLeft: { x: 3, y: 5 },
+    bottomRight: { x: 6, y: 10 },
     id: 2 };
 
 function populateMap(array, cols, rows) {
@@ -28,9 +28,9 @@ function populateMap(array, cols, rows) {
   // }
   //connectRooms(array, cols, rows, generatedRooms);
   drawRoom(array, cols, room1);
-  drawRoom(array, cols, room2);
-  // drawRoom(array, cols, room3);
-  generatedRooms.push(room1, room2);
+  // drawRoom(array, cols, room2);
+  drawRoom(array, cols, room3);
+  generatedRooms.push( room1, room3);
   connectRooms(array, cols, rows, generatedRooms);
 }
 
@@ -167,6 +167,10 @@ function connectRoomToRoom(room, rooms){
   //let side;
   let direction = {x: 0, y: 0};
   let point = {};
+  let parallel = true;
+  let perpendicularAxes = {};
+  let initialDirection;
+  let endAxis;
   if (randomRoom.topLeft.x > room.bottomRight.x) {
     //side = "right";
     direction.x = 1;
@@ -189,6 +193,7 @@ function connectRoomToRoom(room, rooms){
 
   //parallel on x axis
   let parallelAxes = [];
+
    //check es6
   if((direction.x === -1 || direction.x === 1) && direction.y === 0) {
     parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
@@ -196,19 +201,37 @@ function connectRoomToRoom(room, rooms){
     console.log(parallelAxes);
     point.y = parallelAxes[Math.floor(Math.random()*parallelAxes.length)];
   } //parallel on y axis
-  else if((direction.x === -1 || direction.x === 1) && direction.y === 0) {
-    parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
-                            Math.min(room.bottomRight.y, randomRoom.bottomRight.y));
+  else if((direction.y === -1 || direction.y === 1) && direction.x === 0) {
+    parallelAxes = range(Math.max(room.topLeft.x, randomRoom.topLeft.x),
+                            Math.min(room.bottomRight.x, randomRoom.bottomRight.x));
     console.log(parallelAxes);
     point.x = parallelAxes[Math.floor(Math.random()*parallelAxes.length)];
   } else {
+    let startPoints = [];
+    let endPoints = [];
     console.log(" not parallel");
+    parallel = false;
+    perpendicularAxes.x = range(randomRoom.topLeft.x, randomRoom.bottomRight.x);
+    perpendicularAxes.y = range(randomRoom.topLeft.y, randomRoom.bottomRight.y);
+    initialDirection = Math.random() < 0.5 ? "x" : "y";
+    if(initialDirection === "x"){
+      startPoints = range(room.topLeft.x, room.bottomRight.x);
+      point.x = startPoints[Math.floor(Math.random() * startPoints.length)];
+      endPoints = range(randomRoom.topLeft.x, randomRoom.bottomRight.x);
+      endAxis = endPoints[Math.floor(Math.random() * endPoints.length)];
+    } else {
+      startPoints = range(room.topLeft.y, room.bottomRight.y);
+      point.y = startPoints[Math.floor(Math.random() * startPoints.length)];
+      endPoints = range(randomRoom.topLeft.y, randomRoom.bottomRight.y);
+      endAxis = endPoints[Math.floor(Math.random() * endPoints.length)];
+    }
   }
 
   console.log(room, rooms, randomRoom);
   console.log(direction);
 
-  return {point, direction};
+  return { point, direction, parallel,
+    perpendicularAxes, initialDirection, endAxis};
 
 }
 
@@ -261,34 +284,65 @@ function getPathBetweenRooms(array, cols, rows, path){
   let testIndex = xyToIndex(path.point, cols);
   array[testIndex] = 5;
   console.log(path);
-  while(unconnected){
+  if(path.parallel){
+    while(unconnected){
 
-    path.point.x += path.direction.x;
-    path.point.y += path.direction.y;
-    let currentIndex = xyToIndex(path.point, cols);
-    if(path.point.x > 0 && path.point.y > 0
-    && path.point.x < cols && path.point.y < rows){
-      if(array[currentIndex] === 1){
-        validIndicies.push(currentIndex);
-        array[currentIndex] = 5;
+      path.point.x += path.direction.x;
+      path.point.y += path.direction.y;
+      let currentIndex = xyToIndex(path.point, cols);
+      if(path.point.x > 0 && path.point.y > 0
+      && path.point.x < cols && path.point.y < rows){
+        if(array[currentIndex] === 1){
+          validIndicies.push(currentIndex);
+          array[currentIndex] = 5;
+          draw(array);
+          debugger;
+        }else if(array[currentIndex] === 0){
+        	console.log("ran into a zero should end");
+          unconnected = false;
+        }
+        chanceToBend += 0.1;
+
+      }else{
+        for(let i = 0; i < validIndicies.length; i++){
+          array[validIndicies[i]] = 1;
+        }
         draw(array);
-        debugger;
-      }else if(array[currentIndex] === 0){
-      	console.log("ran into a zero should end");
-        unconnected = false;
-        pathFound = true;
+      	validIndicies = [];
+        break;
       }
-      chanceToBend += 0.1;
-
-    }else{
-      for(let i = 0; i < validIndicies.length; i++){
-        array[validIndicies[i]] = 1;
+    }
+  } else {
+    let turned = false;
+    while(unconnected){
+      path.point[path.initialDirection] += path.direction[path.initialDirection];
+      let currentIndex = xyToIndex(path.point, cols);
+      if(path.point[path.initialDirection] === path.endAxis && !turned){
+        path.initialDirection = path.initialDirection === "x" ? "y" : "x"; //flip from "x" to "y";
+        turned = true;
       }
-      draw(array);
-    	validIndicies = [];
-      break;
+      if(path.point.x > 0 && path.point.y > 0
+      && path.point.x < cols && path.point.y < rows){ //This should never fail now, so it necessary?
+        if(array[currentIndex] === 1){
+          validIndicies.push(currentIndex);
+          array[currentIndex] = 5;
+          draw(array);
+          debugger;
+        }else if(array[currentIndex] === 0){
+        	console.log("ran into a zero should end");
+          unconnected = false;
+        }
+      } else {
+        for(let i = 0; i < validIndicies.length; i++){
+          array[validIndicies[i]] = 1;
+        }
+        draw(array);
+      	validIndicies = [];
+        break;
+      }
     }
   }
+
   return validIndicies;
 }
 
