@@ -215,13 +215,13 @@ function connectRoomToRoom(room, rooms){
     perpendicularAxes.y = range(randomRoom.topLeft.y, randomRoom.bottomRight.y);
     initialDirection = Math.random() < 0.5 ? "x" : "y";
     if(initialDirection === "x"){
-      startPoints = range(room.topLeft.x, room.bottomRight.x);
-      point.x = startPoints[Math.floor(Math.random() * startPoints.length)];
+      startPoints = range(room.topLeft.y, room.bottomRight.y);
+      point.y = startPoints[Math.floor(Math.random() * startPoints.length)];
       endPoints = range(randomRoom.topLeft.x, randomRoom.bottomRight.x);
       endAxis = endPoints[Math.floor(Math.random() * endPoints.length)];
     } else {
-      startPoints = range(room.topLeft.y, room.bottomRight.y);
-      point.y = startPoints[Math.floor(Math.random() * startPoints.length)];
+      startPoints = range(room.topLeft.x, room.bottomRight.x);
+      point.x = startPoints[Math.floor(Math.random() * startPoints.length)];
       endPoints = range(randomRoom.topLeft.y, randomRoom.bottomRight.y);
       endAxis = endPoints[Math.floor(Math.random() * endPoints.length)];
     }
