@@ -2,6 +2,7 @@ let mapCols = 27;
 let mapRows = 27;
 let rawArray = Array(mapCols * mapRows).fill(1);
 let generatedRooms = [];
+let nodeList = {};
 
 let room1 = { topLeft: { x: 18, y: 13 },
     bottomRight: { x: 23, y: 17 },
@@ -16,22 +17,24 @@ let room3 = { topLeft: { x: 3, y: 5 },
 function populateMap(array, cols, rows) {
   let roomsGenerated = 0;
   let tries = 0;
-  // while ((roomsGenerated < 7 && tries < 300) || tries > 300) {
-  //   tries++;
-  //   let room = generateRoom(array, cols, rows);
-  //   if (room) {
-  //     room.id = roomsGenerated;
-  //     generatedRooms[roomsGenerated] = room;
-  //     roomsGenerated++;
-  //     console.log(generatedRooms);
-  //   }
-  // }
-  //connectRooms(array, cols, rows, generatedRooms);
-  drawRoom(array, cols, room1);
-  // drawRoom(array, cols, room2);
-  drawRoom(array, cols, room3);
-  generatedRooms.push( room1, room3);
+  while ((roomsGenerated < 7 && tries < 300) || tries > 300) {
+    tries++;
+    let room = generateRoom(array, cols, rows);
+    if (room) {
+      room.id = roomsGenerated;
+      generatedRooms[roomsGenerated] = room;
+      nodeList[room.id] = [room];
+      room.node = room.id;
+      roomsGenerated++;
+      console.log(generatedRooms);
+    }
+  }
   connectRooms(array, cols, rows, generatedRooms);
+  // drawRoom(array, cols, room1);
+  // drawRoom(array, cols, room2);
+  // drawRoom(array, cols, room3);
+  // generatedRooms.push(room1, room2, room3);
+  // connectRooms(array, cols, rows, generatedRooms);
 }
 
 function drawRoom(array, cols, room){
@@ -86,7 +89,7 @@ function generateRoom(array, cols, rows){
     for(let i = 0; i < validIndicies.length; i++){
       array[validIndicies[i]] = 0;
     }
-    return {topLeft: indexToXY(roomStart, cols), bottomRight: indexToXY(lastIndex, cols), connected: false};
+    return {topLeft: indexToXY(roomStart, cols), bottomRight: indexToXY(lastIndex, cols)};
   }else{
     return false;
   }
@@ -136,6 +139,7 @@ function connectRooms(array, cols, rows, rooms) {
     let pathFound = false;
     let validIndicies = [];
     let tries = 0;
+    let path;
     //let path = getPointOnSide(room);
   	//array[xyToIndex(path.point, cols)] = 5;
     // while (!pathFound) {
@@ -144,7 +148,15 @@ function connectRooms(array, cols, rows, rooms) {
 
 
     draw(array);
-    let path = connectRoomToRoom(room, rooms.filter((x)=> x.id !== room.id));
+    let unconnectedRooms;
+    if(nodeList[room.node].length < generatedRooms.length){
+      unconnectedRooms = rooms.filter((x) => {
+        return x.node !== room.node;
+      })
+      path = connectRoomToRoom(room, unconnectedRooms);
+    }else{
+      path = connectRoomToRoom(room, rooms.filter((x) => x.id !== room.id));
+    }
     validIndicies = getPathBetweenRooms(array, cols, rows, path);
       // if(validIndicies.length > 0){
       //   pathFound = true;
@@ -194,7 +206,7 @@ function connectRoomToRoom(room, rooms){
   //parallel on x axis
   let parallelAxes = [];
 
-   //check es6
+   //need to make sure the starting point is not already used or adjecent to another corridor.
   if((direction.x === -1 || direction.x === 1) && direction.y === 0) {
     parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
                             Math.min(room.bottomRight.y, randomRoom.bottomRight.y));
@@ -230,9 +242,26 @@ function connectRoomToRoom(room, rooms){
   console.log(room, rooms, randomRoom);
   console.log(direction);
 
-  return { point, direction, parallel,
-    perpendicularAxes, initialDirection, endAxis};
+  mergeNodes(room, randomRoom); //This shouldn't be here, it should happen after the rooms are connected;
+  console.log("node list", nodeList);
 
+  return { point, direction, parallel,
+    perpendicularAxes, initialDirection, endAxis,
+    destination: randomRoom};
+    //rather than checking to see if it hits a zero, should just check if it got to the target randomRoom
+
+}
+
+function mergeNodes(room1, room2){
+  if(room1.node !== room2.node){
+    let oldNode = room2.node;
+    for(let i = 0; i < nodeList[oldNode].length; i++){
+      nodeList[oldNode][i].node = room1.node;
+    }
+
+    nodeList[room1.node] = nodeList[room1.node].concat(nodeList[oldNode]);
+    delete nodeList[oldNode];
+  }
 }
 
 function range(start, end) {
@@ -278,8 +307,6 @@ function getPointOnSide(room){
 
 function getPathBetweenRooms(array, cols, rows, path){
   validIndicies = [];
-      // brute force
-  let chanceToBend = 0.1;
   let unconnected = true;
   let testIndex = xyToIndex(path.point, cols);
   array[testIndex] = 5;
@@ -292,21 +319,18 @@ function getPathBetweenRooms(array, cols, rows, path){
       let currentIndex = xyToIndex(path.point, cols);
       if(path.point.x > 0 && path.point.y > 0
       && path.point.x < cols && path.point.y < rows){
-        if(array[currentIndex] === 1){
-          validIndicies.push(currentIndex);
-          array[currentIndex] = 5;
-          draw(array);
-          debugger;
-        }else if(array[currentIndex] === 0){
+        validIndicies.push(currentIndex);
+        array[currentIndex] = 5;
+        draw(array);
+        if(isPointInRoom(path.point, path.destination)){
         	console.log("ran into a zero should end");
           unconnected = false;
         }
-        chanceToBend += 0.1;
 
       }else{
-        for(let i = 0; i < validIndicies.length; i++){
-          array[validIndicies[i]] = 1;
-        }
+        // for(let i = 0; i < validIndicies.length; i++){
+        //  array[validIndicies[i]] = 1;
+        // }
         draw(array);
       	validIndicies = [];
         break;
@@ -323,19 +347,17 @@ function getPathBetweenRooms(array, cols, rows, path){
       }
       if(path.point.x > 0 && path.point.y > 0
       && path.point.x < cols && path.point.y < rows){ //This should never fail now, so it necessary?
-        if(array[currentIndex] === 1){
-          validIndicies.push(currentIndex);
-          array[currentIndex] = 5;
-          draw(array);
-          debugger;
-        }else if(array[currentIndex] === 0){
+        validIndicies.push(currentIndex);
+        array[currentIndex] = 5;
+        draw(array);
+        if(isPointInRoom(path.point, path.destination)){
         	console.log("ran into a zero should end");
           unconnected = false;
         }
       } else {
-        for(let i = 0; i < validIndicies.length; i++){
-          array[validIndicies[i]] = 1;
-        }
+        // for(let i = 0; i < validIndicies.length; i++){
+        //   array[validIndicies[i]] = 1;
+        // }
         draw(array);
       	validIndicies = [];
         break;
@@ -344,6 +366,19 @@ function getPathBetweenRooms(array, cols, rows, path){
   }
 
   return validIndicies;
+}
+
+function isPointInRoom(point, room){
+  console.log(point.x >= room.topLeft.x, point.x <= room.bottomRight.x,
+    point.y >= room.topLeft.y, room.y <= room.bottomRight.y,
+    point.x >= room.topLeft.x && point.x <= room.bottomRight.x
+      && point.y >= room.topLeft.y && point.y <= room.bottomRight.y);
+  if (point.x >= room.topLeft.x && point.x <= room.bottomRight.x
+    && point.y >= room.topLeft.y && point.y <= room.bottomRight.y) {
+    return true;
+  }
+
+  return false;
 }
 
 function getPointBetween(xy1, xy2) { //inclusive
