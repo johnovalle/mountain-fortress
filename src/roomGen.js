@@ -1,6 +1,3 @@
-let mapCols = 27;
-let mapRows = 27;
-let rawArray = Array(mapCols * mapRows).fill(1);
 let generatedRooms = [];
 let nodeList = {};
 
@@ -16,7 +13,6 @@ function populateMap(array, cols, rows) {
       nodeList[room.id] = [room];
       room.node = room.id;
       roomsGenerated++;
-      console.log(generatedRooms);
     }
   }
   connectRooms(array, cols, rows, generatedRooms);
@@ -256,48 +252,3 @@ function isPointInRoom(point, room){
 function getPointBetween(xy1, xy2) { //inclusive
   return Math.floor(Math.random() * (xy2 - xy1 + 1) + xy1);
 }
-
-function Convert1dTo2d(array, cols) {
-  let nested = [[]];
-  let curRow = 0; // -1 for real
-  for (let i = 0; i < array.length; i++) {
-    if (i % cols === 0 || i === 0) {
-      curRow++;
-      nested[curRow] = [];
-    }
-    nested[curRow].push(array[i]);
-  }
-  return nested;
-}
-populateMap(rawArray, mapCols, mapRows);
-draw(rawArray);
-
-// bundling this because I don't want to mix this testing code
-function draw(map){
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-
-  const colorMap = {
-    0: "blue",
-    1: "yellow",
-    2: "green",
-    3: "red",
-    4: "pink",
-    5: "violet",
-    6: "orange",
-    7: "purple",
-    8: "cyan"
-  };
-
-  ctx.clearRect(0,0, 864, 864);
-  ctx.font = "8px Arial";
-  for(var i = 0; i < map.length; i++){
-    let tileCords = indexToXY(i, mapCols);
-    ctx.fillStyle = colorMap[map[i]];
-    ctx.fillRect(tileCords.x * 32, tileCords.y * 32, 32, 32);
-    ctx.fillStyle = "black";
-    ctx.fillText(i,(tileCords.x * 32) + 5, (tileCords.y * 32) + 15);
-  }
-};
-
-//console.log(Convert1dTo2d(rawArray, mapCols));
