@@ -4,16 +4,6 @@ let rawArray = Array(mapCols * mapRows).fill(1);
 let generatedRooms = [];
 let nodeList = {};
 
-let room1 = { topLeft: { x: 18, y: 13 },
-    bottomRight: { x: 23, y: 17 },
-    id: 0 };
-let room2 = { topLeft: { x: 6, y: 15 },
-    bottomRight: { x: 9, y: 19 },
-    id: 1 };
-let room3 = { topLeft: { x: 3, y: 5 },
-    bottomRight: { x: 6, y: 10 },
-    id: 2 };
-
 function populateMap(array, cols, rows) {
   let roomsGenerated = 0;
   let tries = 0;
@@ -30,11 +20,6 @@ function populateMap(array, cols, rows) {
     }
   }
   connectRooms(array, cols, rows, generatedRooms);
-  // drawRoom(array, cols, room1);
-  // drawRoom(array, cols, room2);
-  // drawRoom(array, cols, room3);
-  // generatedRooms.push(room1, room2, room3);
-  // connectRooms(array, cols, rows, generatedRooms);
 }
 
 function drawRoom(array, cols, room){
@@ -110,13 +95,8 @@ function getRoomStart(array, cols, rows, roomWidth, roomHeight) {
     let coords = indexToXY(index, cols);
 
     // makes sure room doesn't start or end on map edge
-    if (
-      coords.x + roomWidth < cols - 1 &&
-      coords.y + roomHeight < rows - 1 &&
-      coords.x > 0 &&
-      coords.y > 0
-    ) {
-      //console.log(index, coords);
+    if ( coords.x + roomWidth < cols - 1 && coords.y + roomHeight < rows - 1
+      && coords.x > 0 && coords.y > 0) {
       foundStart = true;
       start = index;
     }
@@ -140,65 +120,40 @@ function connectRooms(array, cols, rows, rooms) {
     let validIndicies = [];
     let tries = 0;
     let path;
-    //let path = getPointOnSide(room);
-  	//array[xyToIndex(path.point, cols)] = 5;
-    // while (!pathFound) {
-    //   console.log(tries);
 
-
-
-    draw(array);
-    let unconnectedRooms;
     if(nodeList[room.node].length < generatedRooms.length){
-      unconnectedRooms = rooms.filter((x) => {
-        return x.node !== room.node;
-      })
-      path = connectRoomToRoom(room, unconnectedRooms);
+      path = connectRoomToRoom(room, rooms.filter((x) => x.node !== room.node));
     }else{
       path = connectRoomToRoom(room, rooms.filter((x) => x.id !== room.id));
     }
     validIndicies = getPathBetweenRooms(array, cols, rows, path);
-      // if(validIndicies.length > 0){
-      //   pathFound = true;
-      // }
-      // intelligent?
-      //let path = findPath(room, rooms);
-    //  tries++;
-    //}
+
     for (let i = 0; i < validIndicies.length; i++) {
-      array[validIndicies[i]] = 7;
+      array[validIndicies[i]] = 0;
     }
-    draw(array);
   }
 }
 
 function connectRoomToRoom(room, rooms){
   let randomRoom = rooms[Math.floor(Math.random() * rooms.length)];
 
-  //get side
-  //let side;
   let direction = {x: 0, y: 0};
   let point = {};
   let parallel = true;
-  let perpendicularAxes = {};
   let initialDirection;
   let endAxis;
-  if (randomRoom.topLeft.x > room.bottomRight.x) {
-    //side = "right";
+  if (randomRoom.topLeft.x > room.bottomRight.x) { //"right";
     direction.x = 1;
     point.x = room.bottomRight.x;
-  } else if (randomRoom.bottomRight.x < room.topLeft.x) {
-    //side = "left";
+  } else if (randomRoom.bottomRight.x < room.topLeft.x) { // "left";
     direction.x = -1;
     point.x = room.topLeft.x;
   }
 
-  if (randomRoom.topLeft.y > room.bottomRight.y) {
-    // below
+  if (randomRoom.topLeft.y > room.bottomRight.y) { // below
     direction.y = 1;
     point.y = room.bottomRight.y;
-  } else if (randomRoom.bottomRight.y < room.topLeft.y) {
-    // above
+  } else if (randomRoom.bottomRight.y < room.topLeft.y) { // above
     direction.y = -1;
     point.y = room.topLeft.y;
   }
@@ -210,27 +165,26 @@ function connectRoomToRoom(room, rooms){
   if((direction.x === -1 || direction.x === 1) && direction.y === 0) {
     parallelAxes = range(Math.max(room.topLeft.y, randomRoom.topLeft.y),
                             Math.min(room.bottomRight.y, randomRoom.bottomRight.y));
-    console.log(parallelAxes);
     point.y = parallelAxes[Math.floor(Math.random()*parallelAxes.length)];
+    initialDirection = "x";
   } //parallel on y axis
   else if((direction.y === -1 || direction.y === 1) && direction.x === 0) {
     parallelAxes = range(Math.max(room.topLeft.x, randomRoom.topLeft.x),
                             Math.min(room.bottomRight.x, randomRoom.bottomRight.x));
-    console.log(parallelAxes);
     point.x = parallelAxes[Math.floor(Math.random()*parallelAxes.length)];
-  } else {
+    initialDirection = "y";
+  } else { // not parallel
     let startPoints = [];
     let endPoints = [];
-    console.log(" not parallel");
     parallel = false;
-    perpendicularAxes.x = range(randomRoom.topLeft.x, randomRoom.bottomRight.x);
-    perpendicularAxes.y = range(randomRoom.topLeft.y, randomRoom.bottomRight.y);
     initialDirection = Math.random() < 0.5 ? "x" : "y";
+
     if(initialDirection === "x"){
       startPoints = range(room.topLeft.y, room.bottomRight.y);
       point.y = startPoints[Math.floor(Math.random() * startPoints.length)];
       endPoints = range(randomRoom.topLeft.x, randomRoom.bottomRight.x);
       endAxis = endPoints[Math.floor(Math.random() * endPoints.length)];
+
     } else {
       startPoints = range(room.topLeft.x, room.bottomRight.x);
       point.x = startPoints[Math.floor(Math.random() * startPoints.length)];
@@ -238,18 +192,11 @@ function connectRoomToRoom(room, rooms){
       endAxis = endPoints[Math.floor(Math.random() * endPoints.length)];
     }
   }
-
-  console.log(room, rooms, randomRoom);
-  console.log(direction);
-
   mergeNodes(room, randomRoom); //This shouldn't be here, it should happen after the rooms are connected;
-  console.log("node list", nodeList);
 
   return { point, direction, parallel,
-    perpendicularAxes, initialDirection, endAxis,
+    initialDirection, endAxis,
     destination: randomRoom};
-    //rather than checking to see if it hits a zero, should just check if it got to the target randomRoom
-
 }
 
 function mergeNodes(room1, room2){
@@ -265,114 +212,39 @@ function mergeNodes(room1, room2){
 }
 
 function range(start, end) {
-  console.log(start, end);
   return Array(end - start + 1).fill().map((_, idx) => start + idx)
-}
-
-function getPointOnSide(room){
-  let side = Math.random();
-  let point;
-  let direction;
-  if (side < 0.25) {
-    //top
-    point = {
-      x: getPointBetween(room.topLeft.x, room.bottomRight.x),
-      y: room.topLeft.y
-    };
-    direction = { x: 0, y: -1 };
-  } else if (side < 0.5) {
-    //bottom
-    point = {
-      x: getPointBetween(room.topLeft.x, room.bottomRight.x),
-      y: room.bottomRight.y
-    };
-    direction = { x: 0, y: 1 };
-  } else if (side < 0.75) {
-    //left
-    point = {
-      x: room.topLeft.x,
-      y: getPointBetween(room.topLeft.y, room.bottomRight.y)
-    };
-    direction = { x: -1, y: 0 };
-  } else {
-    //right
-    point = {
-      x: room.bottomRight.x,
-      y: getPointBetween(room.topLeft.y, room.bottomRight.y)
-    };
-    direction = { x: 1, y: 0 };
-  }
-  return {point, direction};
 }
 
 function getPathBetweenRooms(array, cols, rows, path){
   validIndicies = [];
   let unconnected = true;
-  let testIndex = xyToIndex(path.point, cols);
-  array[testIndex] = 5;
-  console.log(path);
-  if(path.parallel){
-    while(unconnected){
+  let turned = false;
+  while(unconnected){
+    path.point[path.initialDirection] += path.direction[path.initialDirection];
 
-      path.point.x += path.direction.x;
-      path.point.y += path.direction.y;
-      let currentIndex = xyToIndex(path.point, cols);
-      if(path.point.x > 0 && path.point.y > 0
-      && path.point.x < cols && path.point.y < rows){
-        validIndicies.push(currentIndex);
-        array[currentIndex] = 5;
-        draw(array);
-        if(isPointInRoom(path.point, path.destination)){
-        	console.log("ran into a zero should end");
-          unconnected = false;
-        }
-
-      }else{
-        // for(let i = 0; i < validIndicies.length; i++){
-        //  array[validIndicies[i]] = 1;
-        // }
-        draw(array);
-      	validIndicies = [];
-        break;
-      }
+    if(!path.parallel && path.point[path.initialDirection] === path.endAxis && !turned){
+      path.initialDirection = path.initialDirection === "x" ? "y" : "x"; //flip from "x" to "y";
+      turned = true;
     }
-  } else {
-    let turned = false;
-    while(unconnected){
-      path.point[path.initialDirection] += path.direction[path.initialDirection];
-      let currentIndex = xyToIndex(path.point, cols);
-      if(path.point[path.initialDirection] === path.endAxis && !turned){
-        path.initialDirection = path.initialDirection === "x" ? "y" : "x"; //flip from "x" to "y";
-        turned = true;
+
+    let currentIndex = xyToIndex(path.point, cols);
+    if(path.point.x > 0 && path.point.y > 0
+    && path.point.x < cols && path.point.y < rows){
+      validIndicies.push(currentIndex);
+      // array[currentIndex] = 5;
+      if(isPointInRoom(path.point, path.destination)){
+        unconnected = false;
       }
-      if(path.point.x > 0 && path.point.y > 0
-      && path.point.x < cols && path.point.y < rows){ //This should never fail now, so it necessary?
-        validIndicies.push(currentIndex);
-        array[currentIndex] = 5;
-        draw(array);
-        if(isPointInRoom(path.point, path.destination)){
-        	console.log("ran into a zero should end");
-          unconnected = false;
-        }
-      } else {
-        // for(let i = 0; i < validIndicies.length; i++){
-        //   array[validIndicies[i]] = 1;
-        // }
-        draw(array);
-      	validIndicies = [];
-        break;
-      }
+
+    } else {
+    	validIndicies = [];
+      break;
     }
   }
-
   return validIndicies;
 }
 
 function isPointInRoom(point, room){
-  console.log(point.x >= room.topLeft.x, point.x <= room.bottomRight.x,
-    point.y >= room.topLeft.y, room.y <= room.bottomRight.y,
-    point.x >= room.topLeft.x && point.x <= room.bottomRight.x
-      && point.y >= room.topLeft.y && point.y <= room.bottomRight.y);
   if (point.x >= room.topLeft.x && point.x <= room.bottomRight.x
     && point.y >= room.topLeft.y && point.y <= room.bottomRight.y) {
     return true;
@@ -398,6 +270,7 @@ function Convert1dTo2d(array, cols) {
   return nested;
 }
 populateMap(rawArray, mapCols, mapRows);
+draw(rawArray);
 
 // bundling this because I don't want to mix this testing code
 function draw(map){
