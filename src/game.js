@@ -4,7 +4,8 @@ import Dispatcher from "./dispatcher";
 import ControllerMaps from "./controllerMaps";
 import {loadSpritesheet} from "./sprites";
 import {draw} from "./draw";
-import {map1} from "./maps";
+// import {map1} from "./maps";
+import { buildMap, getRandomAvailable } from "./roomGen";
 import Config from "./config";
 import * as MapUtil from "./map-util";
 Canvas.attachCanvas(document.body);
@@ -18,9 +19,11 @@ addEventListener("keydown", (event) => {
 });
 
 // Temp!!!
-Model.scenes.play.map = map1;
-Dispatcher.sendMessage({action: "Change Map", payload: [map1]});
-Model.scenes.play.entities = [{name: 'player', index: 364, x: 416, y: 416, key: 5 }] //364
+Model.scenes.play.map = buildMap(27, 27, {0: [0,1,2], 1: [3,4]});
+Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.map]});
+let playerStart = getRandomAvailable(Model.scenes.play.map);
+console.log(playerStart);
+Model.scenes.play.entities = [{name: 'player', index: playerStart.index, x: playerStart.x, y: playerStart.y, key: 5 }] //364
 Model.state.player = Model.scenes.play.entities[0];
 // end Temp
 
@@ -28,7 +31,7 @@ Model.changeScene("start");
 
 // console.log(Model);
 // This isn't exactly right but for now I'll assume all sheets within a given project will have the same tileSize
-loadSpritesheet("mountain-fortress.png", 32, 256, () => { 
+loadSpritesheet("mountain-fortress.png", 32, 256, () => {
   run();
 })
 

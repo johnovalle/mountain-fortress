@@ -1,5 +1,17 @@
+import { tileDictionary } from "./tiles";
+
 let generatedRooms = [];
 let nodeList = {};
+
+
+
+export function buildMap(cols, rows, tiles) {
+  let mapBase = Array(cols * rows).fill(1);
+  populateMap(mapBase, cols, rows);
+  replaceTiles(mapBase, tiles);
+  return {mapCols: cols, mapRows: rows, isBG: true, grid: mapBase }; //refactor here and in other places now that map is being generated;
+}
+
 
 function populateMap(array, cols, rows) {
   let roomsGenerated = 0;
@@ -24,6 +36,34 @@ function drawRoom(array, cols, room){
       array[i + (j * cols)] = 0;
     }
   }
+}
+
+function replaceTiles(baseMap, tiles) {
+    for (let i = 0; i < baseMap.length; i++) {
+      let random = getRandomInArray(tiles[baseMap[i]])
+      baseMap[i] = tiles[baseMap[i]][random];
+    }
+}
+
+function getRandomInArray(array){
+  return Math.floor(Math.random() * array.length);
+}
+
+function getEmptyIndex(map){
+  let empties = [];
+  for (let i = 0; i < map.length; i++) {
+    let tile = map[i];
+    if(tileDictionary[tile].type === "floor") {
+      empties.push(i);
+    } //or passible?
+  }
+  return empties;
+}
+export function getRandomAvailable(map){
+  let empties = getEmptyIndex(map.grid);
+  let index = empties[getRandomInArray(empties)];
+  let xy = indexToXY(index, map.mapCols);
+  return Object.assign({index}, xy);
 }
 
 function generateRoom(array, cols, rows){
@@ -212,7 +252,7 @@ function range(start, end) {
 }
 
 function getPathBetweenRooms(array, cols, rows, path){
-  validIndicies = [];
+  let validIndicies = [];
   let unconnected = true;
   let turned = false;
   while(unconnected){
