@@ -4,7 +4,6 @@ import Dispatcher from "./dispatcher";
 import ControllerMaps from "./controllerMaps";
 import {loadSpritesheet} from "./sprites";
 import {draw} from "./draw";
-// import {map1} from "./maps";
 import { buildMap, getRandomAvailable } from "./roomGen";
 import Config from "./config";
 import * as MapUtil from "./map-util";
@@ -22,8 +21,7 @@ addEventListener("keydown", (event) => {
 Model.scenes.play.map = buildMap(27, 27, {0: [0,1,2], 1: [3,4]});
 Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.map]});
 let playerStart = getRandomAvailable(Model.scenes.play.map);
-console.log(playerStart);
-Model.scenes.play.entities = [{name: 'player', index: playerStart.index, x: playerStart.x, y: playerStart.y, key: 5 }] //364
+Model.scenes.play.entities = [{name: 'player', index: playerStart.index, x: playerStart.x * 32, y: playerStart.y * 32, key: 5 }]
 Model.state.player = Model.scenes.play.entities[0];
 // end Temp
 
