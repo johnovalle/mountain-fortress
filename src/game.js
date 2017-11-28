@@ -36,8 +36,8 @@ loadSpritesheet("mountain-fortress.png", 32, 256, () => {
 const run = () => {
   if(!Model.state.lastMoveFinished){
         update(Model.state);
-        draw(Model.state);
   }
+  draw(Model.state);
   requestAnimationFrame(run);
 };
 
