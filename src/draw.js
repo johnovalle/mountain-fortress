@@ -26,9 +26,11 @@ const setCameraOffset = () => {
   //console.log("this got called");
   currentCoords = MapUtil.indexToXY(Model.state.player.index); //only get this on scene/level change
   translateOffset = MapUtil.getTranslation(currentCoords); // ''
-  translateOffset.x *= -spritesheet.tileSize;
-  translateOffset.y *= -spritesheet.tileSize;
+  translateOffset.x *= -Config.tileSize;
+  translateOffset.y *= -Config.tileSize;
 }
+
+//TODO DRY up these two methods
 const drawEntities = (level) => { //Temporary
   //buildEntityMap(level);
   //console.log("entitiesMap", level.entitiesMap);
@@ -42,7 +44,7 @@ const drawEntities = (level) => { //Temporary
     let sx = (entity.key % spritesheet.sheetCols) * spritesheet.tileSize;
     let sy = Math.floor(entity.key / spritesheet.sheetCols) * spritesheet.tileSize;
     ctx.drawImage(spritesheet.sheet, sx, sy, spritesheet.tileSize, spritesheet.tileSize,
-                                    entity.x, entity.y, spritesheet.tileSize, spritesheet.tileSize);
+                                    entity.x, entity.y, Config.tileSize, Config.tileSize);
   }
 }
 
@@ -50,12 +52,12 @@ const drawMap = (map) => {
   for(let i = 0, len = map.grid.length;  i < len; i++){
     let tile = map.grid[i];
     if(tile !== 0 || map.isBG){
-      let x = (i % map.mapCols) * spritesheet.tileSize; // index / width of drawing area in tiles * tile size
-      let y = Math.floor(i / map.mapCols) * spritesheet.tileSize;
+      let x = (i % map.mapCols) * Config.tileSize; // index / width of drawing area in tiles * tile size
+      let y = Math.floor(i / map.mapCols) * Config.tileSize;
       let sx = (tile % spritesheet.sheetCols) * spritesheet.tileSize // tile value against width of tilesheet in tiles * tile size on sheet
       let sy = Math.floor(tile / spritesheet.sheetCols) * spritesheet.tileSize;
       ctx.drawImage(spritesheet.sheet, sx, sy, spritesheet.tileSize, spritesheet.tileSize,
-                                      x, y, spritesheet.tileSize, spritesheet.tileSize);
+                                      x, y, Config.tileSize, Config.tileSize);
     }
   }
 };

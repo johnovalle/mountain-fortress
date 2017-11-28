@@ -1,10 +1,10 @@
 import Dispatcher from "./dispatcher";
 
 const config = {
-  canvasHeight: 288,
-  canvasWidth: 288,
-  moveAniSpeed: 4,
-  tileSize: 32,
+  canvasHeight: 576,
+  canvasWidth: 576,
+  moveAniSpeed: 8,
+  tileSize: 64,
   currentMap: null,
   mapCols: 0,
   mapRows: 0,

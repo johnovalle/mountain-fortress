@@ -21,7 +21,7 @@ addEventListener("keydown", (event) => {
 Model.scenes.play.map = buildMap(27, 27, {0: [0,1,2], 1: [3,4]});
 Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.map]});
 let playerStart = getRandomAvailable(Model.scenes.play.map);
-Model.scenes.play.entities = [{name: 'player', index: playerStart.index, x: playerStart.x * 32, y: playerStart.y * 32, key: 5 }]
+Model.scenes.play.entities = [{name: 'player', index: playerStart.index, x: playerStart.x * 64, y: playerStart.y * 64, key: 5 }]
 Model.state.player = Model.scenes.play.entities[0];
 // end Temp
 
