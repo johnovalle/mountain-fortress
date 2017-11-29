@@ -12,12 +12,12 @@ let translateOffset = {x: 0, y: 0};
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
   ctx.save();
-  if(state.currentScene.map) { //Temporary
+  if(state.currentScene.currentLevel && state.currentScene.currentLevel.map) { //Temporary
     //console.log(translateOffset);
     //ctx.translate(translateOffset.x * -spritesheet.tileSize, translateOffset.y * -spritesheet.tileSize);
     ctx.translate(translateOffset.x, translateOffset.y);
-    drawMap(state.currentScene.map);
-    drawEntities(state.currentScene);
+    drawMap(state.currentScene.currentLevel.map);
+    drawEntities(state.currentScene.currentLevel);
   }
   ctx.restore();
 }
@@ -65,7 +65,10 @@ const drawMap = (map) => {
 // Let's see where this goes...
 const drawer = {
   redraw(){
-    setCameraOffset();
+    if(Model.state.currentScene.currentLevel){
+      setCameraOffset();
+    }
+
     draw(Model.state);
   },
   updateCamera(xA, yA){
