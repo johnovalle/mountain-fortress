@@ -22,21 +22,36 @@ export const buildEntityMap = (level) => {
   }
 };
 
-const buildEntity = (level, key, index) => { //lets assume the index is clear and not check here
-  let entity = Object.assign({}, Entity, {key, index});
+const buildEntity = (level, key, location) => { //lets assume the index is clear and not check here
+  let entity = Object.assign({}, Entity, { key, index: location.index, x: location.x * Config.tileSize, y: location.y * Config.tileSize });
+  entity.nextX = entity.x;
+  entity.nextY = entity.y;
   entity.id = idCounter;
   entity.type = tileDictionary[entity.key].type;
 
   idCounter++;
-  level.entitiesMap[index] = entity.key;
+  level.entitiesMap[entity.index] = entity.key;
   level.entities.push(entity);
 
   return entity;
 };
 
-export const buildStairs = (level, key, index, targetLevel, targetIndex) => {
-  let stairs = buildEntity(level, key, index);
-  stairs.targetLevel = targetLevel;
+export const buildStairs = (level, key, location) => {
+  let stairs = buildEntity(level, key, location);
+  //stairs.targetLevel = targetLevel;
   // stairs.targetIndex = targetIndex; //set targetIndex on first use of stairs
   return stairs;
+};
+
+export const buildPlayer = (level, key, location) => {
+  let player = buildEntity(level, key, location);
+  player.name = "player";
+  player.hp = 10;
+  player.maxHp = 10;
+  player.xp = 0;
+  player.level = 1;
+  player.damageModifier = 1;
+  player.weapon = {name: "hand", damage: [1,4], verb: "punch", subtype: "weapon"}
+  player.armor = {name: "cloth", protection: 0}
+  return player;
 };

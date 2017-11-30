@@ -7,6 +7,8 @@ import {draw} from "./draw";
 import { buildMap, getRandomAvailable } from "./roomGen";
 import Config from "./config";
 import * as MapUtil from "./map-util";
+import * as Entity from './entities';
+import { map1 } from './maps';
 Canvas.attachCanvas(document.body);
 
 Model.addScene("start", ()=>{ console.log("enter start scene"); }, ControllerMaps.start );
@@ -16,8 +18,9 @@ Model.addScene("play", () => { console.log("enter play scene");
   Model.scenes.play.currentLevel = level1;
   Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.currentLevel.map]});
   let playerStart = getRandomAvailable(Model.scenes.play.currentLevel.map);
-  Model.scenes.play.currentLevel.entities.push({name: 'player', index: playerStart.index, x: playerStart.x * 64, y: playerStart.y * 64, key: 5 });
-  Model.state.player = Model.scenes.play.currentLevel.entities[0];
+  Model.state.player = Entity.buildPlayer(level1, 5, playerStart); //{index: 28, x: 1, y:1}
+  //Model.scenes.play.currentLevel.entities.push({name: 'player', index: playerStart.index, x: playerStart.x * 64, y: playerStart.y * 64, key: 5 });
+  //Model.state.player = Model.scenes.play.currentLevel.entities[0];
 }, ControllerMaps.play );
 
 addEventListener("keydown", (event) => {
@@ -29,9 +32,13 @@ let levelCounter = 1;
 const createLevel = () => {
   let level = {
     name: "level" + levelCounter,
-    map: buildMap(27, 27, {0: [0,1,2], 1: [3,4]}),
+    map: buildMap(27, 27, {0: [0,1,2], 1: [3,4]}), //map1
     entities: []
   }
+  Entity.buildEntityMap(level);
+  let stairIndex = getRandomAvailable(level.map)
+  Entity.buildStairs(level, 7, stairIndex); //{index: 29, x: 2, y:1}
+
   Model.levels[level.name] = level;
   levelCounter++;
   return level;
