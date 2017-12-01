@@ -4,67 +4,13 @@ import Dispatcher from "./dispatcher";
 import ControllerMaps from "./controllerMaps";
 import {loadSpritesheet} from "./sprites";
 import {draw} from "./draw";
-import { buildMap, getRandomAvailable } from "./roomGen";
+import { getRandomAvailable } from "./roomGen";
 import Config from "./config";
 import * as MapUtil from "./map-util";
 import * as Entity from './entities';
 import { map1 } from './maps';
-Canvas.attachCanvas(document.body);
-
-Model.addScene("start", ()=>{ console.log("enter start scene"); }, ControllerMaps.start );
-Model.addScene("gameOver", ()=>{ console.log("enter game over scene"); }, ControllerMaps.gameOver );
-Model.addScene("play", () => { console.log("enter play scene");
-  let level1 = createLevel();
-  Model.scenes.play.currentLevel = level1;
-  Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.currentLevel.map]});
-  let playerStart = getRandomAvailable(Model.scenes.play.currentLevel.map);
-  Model.state.player = Entity.buildPlayer(level1, 5, playerStart); //{index: 28, x: 1, y:1}
-  //Model.scenes.play.currentLevel.entities.push({name: 'player', index: playerStart.index, x: playerStart.x * 64, y: playerStart.y * 64, key: 5 });
-  //Model.state.player = Model.scenes.play.currentLevel.entities[0];
-}, ControllerMaps.play );
-
-addEventListener("keydown", (event) => {
-    Dispatcher.sendMessage({action: "Key Press", payload: [event.key]});
-});
-
-// move this
-let levelCounter = 1;
-const createLevel = () => {
-  let level = {
-    name: "level" + levelCounter,
-    map: buildMap(27, 27, {0: [0,1,2], 1: [3,4]}), //map1
-    entities: []
-  }
-  Entity.buildEntityMap(level);
-  let stairIndex = getRandomAvailable(level.map)
-  Entity.buildStairs(level, 7, stairIndex); //{index: 29, x: 2, y:1}
-
-  Model.levels[level.name] = level;
-  levelCounter++;
-  return level;
-};
-
-Model.changeScene("start");
-
-// console.log(Model);
-// This isn't exactly right but for now I'll assume all sheets within a given project will have the same tileSize
-loadSpritesheet("mountain-fortress.png", 32, 256, () => {
-  run();
-})
-
-//might make sense to run update on every frame as well
-const run = () => {
-  if(!Model.state.lastMoveFinished){
-        update(Model.state);
-  }
-  draw(Model.state);
-  requestAnimationFrame(run);
-};
 
 var animationCounter = 0;
-function update(state){
-  animateEntityMovement(state);
-}
 
 const animateEntityMovement = (state) => {
   if(state.playerMoved){
@@ -103,8 +49,45 @@ const animateEntityMovement = (state) => {
       state.lastMoveFinished = true;
   }
 }
+
 export const Game = {
   state: Model.state,
+  loadGame(){
+    loadSpritesheet("mountain-fortress.png", 32, 256, () => {
+      this.run();
+    })
+  },
+  start(){
+    Canvas.attachCanvas(document.body);
+
+    Model.addScene("start", ()=>{ console.log("enter start scene"); }, ControllerMaps.start );
+    Model.addScene("gameOver", ()=>{ console.log("enter game over scene"); }, ControllerMaps.gameOver );
+    Model.addScene("play", () => { console.log("enter play scene");
+      let level1 = Model.createLevel();
+      Model.scenes.play.currentLevel = level1;
+      Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.currentLevel.map]});
+      let playerStart = getRandomAvailable(Model.scenes.play.currentLevel.map);
+      Model.state.player = Entity.buildPlayer(level1, 5, playerStart); //{index: 28, x: 1, y:1}
+      //Model.scenes.play.currentLevel.entities.push({name: 'player', index: playerStart.index, x: playerStart.x * 64, y: playerStart.y * 64, key: 5 });
+      //Model.state.player = Model.scenes.play.currentLevel.entities[0];
+    }, ControllerMaps.play );
+
+    addEventListener("keydown", (event) => {
+        Dispatcher.sendMessage({action: "Key Press", payload: [event.key]});
+    });
+    Model.changeScene("start");
+  },
+  run() {
+    //might make sense to run update on every frame as well
+    if(!Model.state.lastMoveFinished){
+          this.update(Model.state);
+    }
+    draw(Model.state);
+    requestAnimationFrame(this.run.bind(this));
+  },
+  update(state) {
+    animateEntityMovement(state);
+  },
   movePlayer(key) {
     // console.log("move player", key);
     if (!this.state.playerMoved && this.state.lastMoveFinished) {

@@ -1,6 +1,8 @@
 import Dispatcher from './dispatcher';
 import {moveEntity, checkIndex} from './map-util';
 import { tileDictionary } from './tiles';
+import * as Entity from './entities';
+import { buildMap, getRandomAvailable } from "./roomGen";
 
 const model = {
   state: {
@@ -10,6 +12,7 @@ const model = {
   },
   scenes: {},
   levels: {}, //This might not even need to be here
+  levelCounter: 1,
   addScene(name, onEnter, controlMap) {
     //console.log(this);
     if(!this.scenes[name]){
@@ -31,6 +34,20 @@ const model = {
     this.state.currentScene = this.scenes[scene];
     this.state.currentScene.onEnter();
     Dispatcher.sendMessage({action: "Change Scene", payload: [this.state.currentScene]});
+  },
+  createLevel() {
+    let level = {
+      name: "level" + this.levelCounter,
+      map: buildMap(27, 27, {0: [0,1,2], 1: [3,4]}), //map1
+      entities: []
+    }
+    Entity.buildEntityMap(level);
+    let stairIndex = getRandomAvailable(level.map)
+    Entity.buildStairs(level, 7, stairIndex); //{index: 29, x: 2, y:1}
+
+    this.levels[level.name] = level;
+    this.levelCounter++;
+    return level;
   },
   handleKeyPress(key) {
     // console.log(key)
