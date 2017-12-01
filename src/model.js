@@ -42,26 +42,7 @@ const model = {
     if(request){
         request.action(...request.args);
     }
-  }, // this should be somewhere else
-  movePlayer(key){
-    // console.log("move player", key);
-    if (!this.state.playerMoved && this.state.lastMoveFinished) {
-      //check the new position and return a values
-      //if value is empty go there
-      //if there is something there handle it (stairs, monster, item);
-
-      let targetAtIndex = checkIndex(this.state.player, key);
-      if(targetAtIndex.passible){
-        moveEntity(this.state.player, key);
-        this.state.playerMoved = true;
-        this.state.lastMoveFinished = false;
-      }else{
-        //handle items, stairs, monsters
-      }
-
-      Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
-    }
-  }
+  },
 };
 
 const Scene = {
