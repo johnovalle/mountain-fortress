@@ -35,15 +35,26 @@ const model = {
     this.state.currentScene.onEnter();
     Dispatcher.sendMessage({action: "Change Scene", payload: [this.state.currentScene]});
   },
-  createLevel() {
+  createLevel(previousLevel, connectingStairs) {
     let level = {
       name: "level" + this.levelCounter,
       map: buildMap(27, 27, {0: [0,1,2], 1: [3,4]}), //map1
       entities: []
     }
+    this.levels[level.name] = level;
+
     Entity.buildEntityMap(level);
-    let stairIndex = getRandomAvailable(level.map)
-    Entity.buildStairs(level, 7, stairIndex); //{index: 29, x: 2, y:1}
+    if (previousLevel) {
+      let stairUpIndex = getRandomAvailable(level.map);
+      Entity.buildStairs(level, 6, stairUpIndex, previousLevel.name, connectingStairs.index);
+      connectingStairs.targetLevel = level.name;
+      connectingStairs.targetIndex = stairUpIndex;
+    }
+
+    if (this.levelCounter < 10) {
+      let stairDownIndex = getRandomAvailable(level.map)
+      Entity.buildStairs(level, 7, stairDownIndex); //{index: 29, x: 2, y:1}
+    }
 
     this.levels[level.name] = level;
     this.levelCounter++;

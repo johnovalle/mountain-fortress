@@ -96,19 +96,52 @@ export const Game = {
       //if there is something there handle it (stairs, monster, item);
 
       let targetAtIndex = MapUtil.checkIndex(this.state.player, key);
-      if(targetAtIndex.passible){
+      if(targetAtIndex.target.passible){
         MapUtil.moveEntity(this.state.player, key);
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
-        if (targetAtIndex.type = "stairs") {
+        let entityAtIndex = Entity.getEntityAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
+        console.log(this.state.currentScene.currentLevel.entities, entityAtIndex)
+        if (entityAtIndex && entityAtIndex.type === "stairs") {
 
+          this.useStairs(this.state.player, entityAtIndex);
         }
         Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
       }else{
         //handle items, stairs, monsters
       }
-
-
     }
+  },
+  useStairs(entity, stairs) {
+    let currentLevel = this.state.currentScene.level;
+    let nextLevel;
+    if(stairs.targetLevel === null){
+      nextLevel = Model.createLevel();
+    } else {
+      nextLevel = Model.levels[stairs.targetLevel];
+    }
+    //  let nextLevel = model.levels[stairs.target];
+    entity.index = stairs.targetIndex;
+    nextLevel.entities.push(entity);
+    Object.assign(entity, MapUtil.indexTrueToXY(entity.index)); //check
+
+    //
+    //  let message = "You go ";
+    //  if(stairs.type === "stairsUp"){ //there are only two types of stairs
+    //    message += "up the stairs"; //to level?
+    //  } else {
+    //    message += "down the stairs";
+    //  }
+    //  messageLog.messages.push(message);
+    this.goToLevel(stairs.targetLevel);
+    Entity.removeEntityFromLevel(currentLevel, entity);
+  },
+  goToLevel(level) {
+    console.log(level);
+    this.state.currentScene.currentLevel = Model.levels[level];
+    Entity.buildEntityMap(this.state.currentScene.currentLevel);
+    Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
+    //model.scenes.play.level.entitiesMap = model.entitiesMaps[level];
   }
+
 };

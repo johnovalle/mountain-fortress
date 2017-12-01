@@ -102,5 +102,5 @@ export const checkIndex = (entity, key) => { //Think about drying this up
     newIndex = entity.index + 1;
   }
    //This wont handle entities at the moment, should I check against two maps or fuse them?
-  return tileDictionary[Config.currentMap.grid[newIndex]];
+  return { target: tileDictionary[Config.currentMap.grid[newIndex]], index: newIndex };
 };
