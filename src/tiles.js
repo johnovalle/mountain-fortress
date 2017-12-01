@@ -5,6 +5,6 @@ export const tileDictionary = {
   3: {passible: false, type: "wall"},
   4: {passible: false, type: "wall"},
   5: {passible: false, type: "player"},
-  6: {passible: true, type: "stairs"},
-  7: {passible: true, type: "stairs"},
+  6: {passible: true, type: "stairs", subtype: "stairs down"},
+  7: {passible: true, type: "stairs", subtype: "stairs up"},
 };

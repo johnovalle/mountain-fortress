@@ -1,5 +1,5 @@
 export default {
-  input: 'src/game.js',
+  input: 'src/index.js',
   output: {
     file: 'dist/bundle.js',
     format: 'cjs'

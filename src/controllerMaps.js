@@ -1,4 +1,5 @@
 import Model from "./model";
+import { Game } from './game';
 
 const controllerMaps = {
   start: {
@@ -6,10 +7,10 @@ const controllerMaps = {
   },
   play: {
     "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["gameOver"]}; },
-    "ArrowUp": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowUp"]}; },
-    "ArrowDown": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowDown"]}; },
-    "ArrowLeft": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowLeft"]}; },
-    "ArrowRight": () => { return {action: Model.movePlayer.bind(Model), args: ["ArrowRight"]}; },
+    "ArrowUp": () => { return {action: Game.movePlayer.bind(Game), args: ["ArrowUp"]}; },
+    "ArrowDown": () => { return {action: Game.movePlayer.bind(Game), args: ["ArrowDown"]}; },
+    "ArrowLeft": () => { return {action: Game.movePlayer.bind(Game), args: ["ArrowLeft"]}; },
+    "ArrowRight": () => { return {action: Game.movePlayer.bind(Game), args: ["ArrowRight"]}; },
   },
   gameOver: {
     "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["start"]}; }

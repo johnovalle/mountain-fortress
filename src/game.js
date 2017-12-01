@@ -103,3 +103,29 @@ const animateEntityMovement = (state) => {
       state.lastMoveFinished = true;
   }
 }
+export const Game = {
+  state: Model.state,
+  movePlayer(key) {
+    // console.log("move player", key);
+    if (!this.state.playerMoved && this.state.lastMoveFinished) {
+      //check the new position and return a values
+      //if value is empty go there
+      //if there is something there handle it (stairs, monster, item);
+
+      let targetAtIndex = MapUtil.checkIndex(this.state.player, key);
+      if(targetAtIndex.passible){
+        MapUtil.moveEntity(this.state.player, key);
+        this.state.playerMoved = true;
+        this.state.lastMoveFinished = false;
+        if (targetAtIndex.type = "stairs") {
+
+        }
+        Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
+      }else{
+        //handle items, stairs, monsters
+      }
+
+
+    }
+  }
+};
