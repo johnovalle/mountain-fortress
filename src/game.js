@@ -101,7 +101,7 @@ export const Game = {
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
         let entityAtIndex = Entity.getEntityAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
-        console.log(this.state.currentScene.currentLevel.entities, entityAtIndex)
+        //console.log(this.state.currentScene.currentLevel.entities, entityAtIndex)
         if (entityAtIndex && entityAtIndex.type === "stairs") {
 
           this.useStairs(this.state.player, entityAtIndex);
@@ -113,10 +113,10 @@ export const Game = {
     }
   },
   useStairs(entity, stairs) {
-    let currentLevel = this.state.currentScene.level;
+    let currentLevel = this.state.currentScene.currentLevel;
     let nextLevel;
     if(stairs.targetLevel === null){
-      nextLevel = Model.createLevel();
+      nextLevel = Model.createLevel(currentLevel, stairs);
     } else {
       nextLevel = Model.levels[stairs.targetLevel];
     }
@@ -124,6 +124,8 @@ export const Game = {
     entity.index = stairs.targetIndex;
     nextLevel.entities.push(entity);
     Object.assign(entity, MapUtil.indexTrueToXY(entity.index)); //check
+    entity.nextX = entity.x;
+    entity.nextY = entity.y;
 
     //
     //  let message = "You go ";
@@ -137,9 +139,10 @@ export const Game = {
     Entity.removeEntityFromLevel(currentLevel, entity);
   },
   goToLevel(level) {
-    console.log(level);
     this.state.currentScene.currentLevel = Model.levels[level];
     Entity.buildEntityMap(this.state.currentScene.currentLevel);
+    //console.log(Model);
+    Dispatcher.sendMessage({action: "Change Map", payload: [this.state.currentScene.currentLevel.map]});
     Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
     //model.scenes.play.level.entitiesMap = model.entitiesMaps[level];
   }

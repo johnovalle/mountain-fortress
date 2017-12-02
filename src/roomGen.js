@@ -6,6 +6,8 @@ let nodeList = {};
 
 
 export function buildMap(cols, rows, tiles) {
+  generatedRooms = [];
+  nodeList = {};
   let mapBase = Array(cols * rows).fill(1);
   populateMap(mapBase, cols, rows);
   replaceTiles(mapBase, tiles);

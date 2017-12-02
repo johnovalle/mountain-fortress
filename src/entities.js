@@ -16,7 +16,7 @@ export const buildEntityMap = (level) => {
   for(let i = 0; i < level.entities.length; i++) {
 
     let entity = level.entities[i];
-    console.log(entity);
+    //console.log(entity);
     level.entitiesMap.grid[entity.index] = entity.key;
   }
 };
