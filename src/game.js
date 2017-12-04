@@ -9,6 +9,7 @@ import Config from "./config";
 import * as MapUtil from "./map-util";
 import * as Entity from './entities';
 import { map1 } from './maps';
+import { rollDice } from './utility';
 
 var animationCounter = 0;
 
@@ -60,8 +61,11 @@ export const Game = {
   start(){
     Canvas.attachCanvas(document.body);
 
-    Model.addScene("start", ()=>{ console.log("enter start scene"); }, ControllerMaps.start );
-    Model.addScene("gameOver", ()=>{ console.log("enter game over scene"); }, ControllerMaps.gameOver );
+    Model.addScene("start", ()=> { console.log("enter start scene"); }, ControllerMaps.start );
+    Model.addScene("gameOver", ()=> { console.log("enter game over scene");
+      Model.state.playerMoved = false;
+      Model.state.lastMoveFinished = true;
+    }, ControllerMaps.gameOver );
     Model.addScene("play", () => { console.log("enter play scene");
       let level1 = Model.createLevel();
       Model.scenes.play.currentLevel = level1;
@@ -88,7 +92,7 @@ export const Game = {
   update(state) {
     animateEntityMovement(state);
   },
-  movePlayer(key) {
+  movePlayer(key) { //need to make this generic since monsters can move too
     // console.log("move player", key);
     if (!this.state.playerMoved && this.state.lastMoveFinished) {
       //check the new position and return a values
@@ -98,18 +102,26 @@ export const Game = {
       let targetAtIndex = MapUtil.checkIndex(this.state.player, key);
       let entityAtIndex = Entity.getEntityAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
       if(targetAtIndex.target.passible){
-        MapUtil.moveEntity(this.state.player, key);
+
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
-
         //console.log(this.state.currentScene.currentLevel.entities, entityAtIndex)
-        if (entityAtIndex && entityAtIndex.type === "stairs") {
-
-          this.useStairs(this.state.player, entityAtIndex);
+        if (entityAtIndex) {
+          if (entityAtIndex.type === "stairs") {
+            this.useStairs(this.state.player, entityAtIndex);
+            Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
+          } else if (entityAtIndex.type === "monster") {
+            console.log(entityAtIndex);
+            this.attackEntity(this.state.player, entityAtIndex, this.state.currentScene.currentLevel);
+            if(entityAtIndex.hp > 0) {
+              this.attackEntity(entityAtIndex, this.state.player, this.state.currentScene.currentLevel);
+            }
+          }
+        } else {
+          MapUtil.moveEntity(this.state.player, key);
+          Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
         }
-        Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
-      }else{
-        //handle items, stairs, monsters
+
       }
     }
   },
@@ -146,6 +158,50 @@ export const Game = {
     Dispatcher.sendMessage({action: "Change Map", payload: [this.state.currentScene.currentLevel.map]});
     Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
     //model.scenes.play.level.entitiesMap = model.entitiesMaps[level];
-  }
+  },
+  attackEntity(attacker, defender, level) {
+    let damage, verb, aIdentity, dIdentiy, posAdj; //maybe simplify this by giving all monsters a weapon?
 
+    //if(attacker.weapon){
+    damage = rollDice(...attacker.weapon.damage);
+    damage += attacker.damageModifier;
+    verb = attacker.weapon.verb;
+    // } else {
+    //   damage = rollDice(...attacker.damage);
+    //   damage += attacker.damageModifier;
+    //   verb = "hits";
+    // }
+    if(damage > defender.armor.protection){
+      defender.hp -= damage - defender.armor.protection;
+    } else {
+      damage = 0;
+    }
+
+
+    if(attacker.type === "player"){
+      aIdentity = "You";
+      dIdentiy = "the " + defender.name;
+      posAdj = "their";
+    }else{
+      aIdentity = "The " + attacker.name;
+      dIdentiy = "you";
+      posAdj = "your"
+    }
+
+    let message = `${aIdentity} ${verb} ${dIdentiy} for ${damage} bringing ${posAdj} hp to ${defender.hp}`;
+    //messageLog.messages.push(message);
+    if(defender.hp <= 0){
+      if(defender.type === "player" || defender.name === "black dragon") {
+        // end the game
+        Model.changeScene("gameOver");
+      }else {
+        Entity.removeEntityFromLevel(level, defender);
+        if(attacker.type === "player"){
+          attacker.xp += defender.xpVal;
+          //check if player leveled
+          //checkPlayerLevel(attacker);
+        }
+      }
+    }
+  }
 };
