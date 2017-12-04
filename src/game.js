@@ -74,7 +74,7 @@ export const Game = {
       let level1 = Model.createLevel();
       Model.scenes.play.currentLevel = level1;
       Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.currentLevel.map]});
-      let playerStart = getRandomAvailable(Model.scenes.play.currentLevel.map);
+      let playerStart = getRandomAvailable(Model.scenes.play.currentLevel.map, Model.scenes.play.currentLevel.entities);
       Model.state.player = Entity.buildPlayer(level1, 5, playerStart); //{index: 28, x: 1, y:1}
       //Model.scenes.play.currentLevel.entities.push({name: 'player', index: playerStart.index, x: playerStart.x * 64, y: playerStart.y * 64, key: 5 });
       //Model.state.player = Model.scenes.play.currentLevel.entities[0];
@@ -118,7 +118,7 @@ export const Game = {
       if(targetAtIndex.target.passible){
         this.state.currentScene.currentLevel.tick++;
         this.gameTick++;
-        console.log("tick", this.state.currentScene.currentLevel.tick, this.gameTick);
+        // console.log("tick", this.state.currentScene.currentLevel.tick, this.gameTick);
 
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
@@ -128,7 +128,7 @@ export const Game = {
             this.useStairs(this.state.player, entityAtIndex);
             Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
           } else if (entityAtIndex.type === "monster") {
-            console.log(entityAtIndex);
+            // console.log(entityAtIndex);
             this.attackEntity(this.state.player, entityAtIndex, this.state.currentScene.currentLevel);
             if(entityAtIndex.hp > 0) {
               this.attackEntity(entityAtIndex, this.state.player, this.state.currentScene.currentLevel);

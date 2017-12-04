@@ -48,14 +48,14 @@ const model = {
 
     Entity.buildEntityMap(level);
     if (previousLevel) {
-      let stairUpIndex = getRandomAvailable(level.map);
+      let stairUpIndex = getRandomAvailable(level.map, level.entities);
       Entity.buildStairs(level, 6, stairUpIndex, previousLevel.name, connectingStairs.index);
       connectingStairs.targetLevel = level.name;
       connectingStairs.targetIndex = stairUpIndex.index;
     }
 
     if (this.levelCounter < 10) {
-      let stairDownIndex = getRandomAvailable(level.map)
+      let stairDownIndex = getRandomAvailable(level.map, level.entities);
       Entity.buildStairs(level, 7, stairDownIndex); //{index: 29, x: 2, y:1}
     }
 
