@@ -98,8 +98,11 @@ export const Game = {
       animateEntityMovement(state);
     }
     if(this.state.currentScene.currentLevel.tick !== this.lastTick){
-      console.log("excuted");
       this.lastTick = this.state.currentScene.currentLevel.tick;
+      if (this.lastTick % Config.generateMonsterTick === 0) {
+        //console.log("excuted");
+        this.generateMonster();
+      }
     }
   },
   movePlayer(key) { //need to make this generic since monsters can move too
@@ -115,7 +118,7 @@ export const Game = {
       if(targetAtIndex.target.passible){
         this.state.currentScene.currentLevel.tick++;
         this.gameTick++;
-        //console.log("tick", this.state.currentScene.currentLevel.tick, this.gameTick);
+        console.log("tick", this.state.currentScene.currentLevel.tick, this.gameTick);
 
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
@@ -217,5 +220,8 @@ export const Game = {
         }
       }
     }
+  },
+  generateMonster() {
+    Entity.generateMonster(this.state.currentScene.currentLevel);
   }
 };

@@ -73,10 +73,7 @@ export const populateLevel = (level) => {
   // the monsters on high levels shold be higher level
   // some monsters such as the dragon do not generate
   let numMonsters = getNumInRange(Config.minimumMonsters, Config.maximumMonsters) + Math.floor(level.baseDifficulty / 2);
-  let possibleMonsters = Object.keys(monsterDictionary).filter((monKey) => {
-    let monster = monsterDictionary[monKey];
-    return monster.threat <= level.baseDifficulty && monster.threat >= Math.floor(level.baseDifficulty / 2);
-  })
+  let possibleMonsters = getPossibleMonsters(level);
   for(let i = 0; i < numMonsters; i++){
 
     buildMonster(
@@ -85,6 +82,23 @@ export const populateLevel = (level) => {
       getRandomAvailable(level.map, level.entities)
     );
   }
+};
+
+export const generateMonster = (level) => {
+  let possibleMonsters = getPossibleMonsters(level);
+  let mon = buildMonster(
+    level,
+    getRandomInArray(possibleMonsters),
+    getRandomAvailable(level.map, level.entities)
+  );
+  console.log("generated: ", mon);
+};
+
+const getPossibleMonsters = (level) => {
+  return Object.keys(monsterDictionary).filter((monKey) => {
+    let monster = monsterDictionary[monKey];
+    return monster.threat <= level.baseDifficulty && monster.threat >= Math.floor(level.baseDifficulty / 2);
+  });
 }
 
 export const removeEntityFromLevel = (level, entity) => {

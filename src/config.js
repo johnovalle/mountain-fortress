@@ -13,7 +13,7 @@ const config = {
   maxOffsetY: 0,
   minimumMonsters: 3,
   maximumMonsters: 12,
-  generateMonsterTick: 50,
+  generateMonsterTick: 20,
   setMaxOffsetX(){
     this.maxOffsetX = this.mapCols - 1 - this.rowsToShow;
   },
