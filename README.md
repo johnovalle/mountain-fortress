@@ -46,3 +46,7 @@ In this way a set of prerecorded movements can be defined for cinematic scenes
 
 ####Cinematic scenes
 Cuts away from game play to show some exposition
+
+
+#Bugs
+monster can generate on same tile as player during populateLevel

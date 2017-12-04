@@ -17,6 +17,7 @@ const model = {
     //console.log(this);
     if(!this.scenes[name]){
       this.scenes[name] = Object.assign({}, Scene, {
+        name,
         id: SceneId,
         entities: [],
         onEnter,
@@ -40,7 +41,8 @@ const model = {
       name: "level" + this.levelCounter,
       map: buildMap(27, 27, {0: [0,1,2], 1: [3,4]}), //map1
       entities: [],
-      baseDifficulty: this.levelCounter
+      baseDifficulty: this.levelCounter,
+      tick: 0
     }
     this.levels[level.name] = level;
 

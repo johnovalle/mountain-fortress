@@ -58,8 +58,12 @@ export const Game = {
       this.run();
     })
   },
+  gameTick: 0, //total elapsed turns
+  lastTick: 0,
   start(){
-    Canvas.attachCanvas(document.body);
+    Canvas.attachCanvas(document.body); //should only do this the first time
+    this.lastTick = 0;
+    this.gameTick = 0;
 
     Model.addScene("start", ()=> { console.log("enter start scene"); }, ControllerMaps.start );
     Model.addScene("gameOver", ()=> { console.log("enter game over scene");
@@ -90,11 +94,18 @@ export const Game = {
     requestAnimationFrame(this.run.bind(this));
   },
   update(state) {
-    animateEntityMovement(state);
+    if(state.currentScene.name === "play") {
+      animateEntityMovement(state);
+    }
+    if(this.state.currentScene.currentLevel.tick !== this.lastTick){
+      console.log("excuted");
+      this.lastTick = this.state.currentScene.currentLevel.tick;
+    }
   },
   movePlayer(key) { //need to make this generic since monsters can move too
-    // console.log("move player", key);
+
     if (!this.state.playerMoved && this.state.lastMoveFinished) {
+
       //check the new position and return a values
       //if value is empty go there
       //if there is something there handle it (stairs, monster, item);
@@ -102,6 +113,9 @@ export const Game = {
       let targetAtIndex = MapUtil.checkIndex(this.state.player, key);
       let entityAtIndex = Entity.getEntityAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
       if(targetAtIndex.target.passible){
+        this.state.currentScene.currentLevel.tick++;
+        this.gameTick++;
+        //console.log("tick", this.state.currentScene.currentLevel.tick, this.gameTick);
 
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
