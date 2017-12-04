@@ -39,7 +39,8 @@ const model = {
     let level = {
       name: "level" + this.levelCounter,
       map: buildMap(27, 27, {0: [0,1,2], 1: [3,4]}), //map1
-      entities: []
+      entities: [],
+      baseDifficulty: this.levelCounter
     }
     this.levels[level.name] = level;
 
@@ -55,6 +56,8 @@ const model = {
       let stairDownIndex = getRandomAvailable(level.map)
       Entity.buildStairs(level, 7, stairDownIndex); //{index: 29, x: 2, y:1}
     }
+
+    Entity.populateLevel(level);
 
     this.levels[level.name] = level;
     this.levelCounter++;

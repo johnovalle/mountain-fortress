@@ -96,11 +96,12 @@ export const Game = {
       //if there is something there handle it (stairs, monster, item);
 
       let targetAtIndex = MapUtil.checkIndex(this.state.player, key);
+      let entityAtIndex = Entity.getEntityAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
       if(targetAtIndex.target.passible){
         MapUtil.moveEntity(this.state.player, key);
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
-        let entityAtIndex = Entity.getEntityAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
+
         //console.log(this.state.currentScene.currentLevel.entities, entityAtIndex)
         if (entityAtIndex && entityAtIndex.type === "stairs") {
 

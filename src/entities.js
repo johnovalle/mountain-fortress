@@ -1,5 +1,8 @@
 import Config from "./config";
-import { tileDictionary } from "./tiles";
+import { tileDictionary, monsterDictionary } from "./tiles";
+import { rollDice, fullDice, firstDieFull, getNumInRange, getRandomInArray } from './utility';
+import { getRandomAvailable } from "./roomGen";
+
 const Entity = {
   x: 0,
   y: 0,
@@ -54,6 +57,35 @@ export const buildPlayer = (level, key, location) => {
   player.armor = {name: "cloth", protection: 0}
   return player;
 };
+
+export const buildMonster = (level, key, index) => {
+  let entity = buildEntity(level, key, index);
+  let monsterRef = monsterDictionary[entity.key];
+  let monster = Object.assign(entity, monsterRef);
+  monster.hp = firstDieFull(...monsterRef.hp);
+  monster.maxHp = monster.hp;
+  return monster;
+};
+
+export const populateLevel = (level) => {
+  // level gets a random number of monsters between the min and maxHp
+  // should be more for higher levels
+  // the monsters on high levels shold be higher level
+  // some monsters such as the dragon do not generate
+  let numMonsters = getNumInRange(Config.minimumMonsters, Config.maximumMonsters) + Math.floor(level.baseDifficulty / 2);
+  let possibleMonsters = Object.keys(monsterDictionary).filter((monKey) => {
+    let monster = monsterDictionary[monKey];
+    return monster.threat <= level.baseDifficulty && monster.threat >= Math.floor(level.baseDifficulty / 2);
+  })
+  for(let i = 0; i < numMonsters; i++){
+
+    buildMonster(
+      level,
+      getRandomInArray(possibleMonsters),
+      getRandomAvailable(level.map, level.entities)
+    );
+  }
+}
 
 export const removeEntityFromLevel = (level, entity) => {
   level.entitiesMap[entity.index] = 0;

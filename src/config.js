@@ -11,6 +11,9 @@ const config = {
   rowsToShow: 4, //There should probably also be a colsToShow in cause I want to display a non-square play area
   maxOffsetX: 0,
   maxOffsetY: 0,
+  minimumMonsters: 3,
+  maximumMonsters: 12,
+  generateMonsterTick: 50,
   setMaxOffsetX(){
     this.maxOffsetX = this.mapCols - 1 - this.rowsToShow;
   },
