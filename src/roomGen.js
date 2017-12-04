@@ -62,8 +62,12 @@ function getEmptyIndex(map){
   return empties;
 }
  //should take an array of entities and filter against their indices
-export function getRandomAvailable(map, entities){
+export function getRandomAvailable(map, entities, viewport){
   let empties = getEmptyIndex(map.grid);
+  if (viewport) {
+    empties = empties.filter(val => !viewport.includes(val));
+
+  }
   if (entities) {
     empties = empties.filter(val => {
       for (let i = 0; i < entities.length; i++) {

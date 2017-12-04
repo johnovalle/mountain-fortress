@@ -84,12 +84,12 @@ export const populateLevel = (level) => {
   }
 };
 
-export const generateMonster = (level) => {
+export const generateMonster = (level, viewport) => {
   let possibleMonsters = getPossibleMonsters(level);
   let mon = buildMonster(
     level,
     getRandomInArray(possibleMonsters),
-    getRandomAvailable(level.map, level.entities)
+    getRandomAvailable(level.map, level.entities, viewport)
   );
   console.log("generated: ", mon);
 };

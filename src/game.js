@@ -2,8 +2,8 @@ import * as Canvas from "./canvas";
 import Model from "./model";
 import Dispatcher from "./dispatcher";
 import ControllerMaps from "./controllerMaps";
-import {loadSpritesheet} from "./sprites";
-import {draw} from "./draw";
+import { loadSpritesheet } from "./sprites";
+import { draw } from "./draw";
 import { getRandomAvailable } from "./roomGen";
 import Config from "./config";
 import * as MapUtil from "./map-util";
@@ -94,9 +94,6 @@ export const Game = {
     requestAnimationFrame(this.run.bind(this));
   },
   update(state) {
-    if(state.currentScene.name === "play") {
-      animateEntityMovement(state);
-    }
     if(this.state.currentScene.currentLevel.tick !== this.lastTick){
       this.lastTick = this.state.currentScene.currentLevel.tick;
       if (this.lastTick % Config.generateMonsterTick === 0) {
@@ -104,9 +101,11 @@ export const Game = {
         this.generateMonster();
       }
     }
+    if(state.currentScene.name === "play") {
+      animateEntityMovement(state);
+    }
   },
   movePlayer(key) { //need to make this generic since monsters can move too
-
     if (!this.state.playerMoved && this.state.lastMoveFinished) {
 
       //check the new position and return a values
@@ -222,6 +221,7 @@ export const Game = {
     }
   },
   generateMonster() {
-    Entity.generateMonster(this.state.currentScene.currentLevel);
+    let viewport = MapUtil.getIndicesInViewport();
+    Entity.generateMonster(this.state.currentScene.currentLevel, viewport);
   }
 };

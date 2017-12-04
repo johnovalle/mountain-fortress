@@ -28,6 +28,8 @@ const setCameraOffset = () => {
   translateOffset = MapUtil.getTranslation(currentCoords); // ''
   translateOffset.x *= -Config.tileSize;
   translateOffset.y *= -Config.tileSize;
+  // I don't know if I really want to put this here but just for the sake of simplicity
+  Config.translateOffset = translateOffset;
 }
 
 //TODO DRY up these two methods
@@ -75,6 +77,7 @@ const drawer = {
     translateOffset.x += xA;
     translateOffset.y += yA;
     translateOffset = MapUtil.constrainCameraTranslation(Model.state.player);
+    Config.translateOffset = translateOffset
   },
 };
 Dispatcher.addListener(drawer);

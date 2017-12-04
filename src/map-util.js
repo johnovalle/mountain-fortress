@@ -104,3 +104,21 @@ export const checkIndex = (entity, key) => { //Think about drying this up
    //This wont handle entities at the moment, should I check against two maps or fuse them?
   return { target: tileDictionary[Config.currentMap.grid[newIndex]], index: newIndex };
 };
+
+export const getIndicesInViewport = () => {
+  let viewport = Object.assign({}, Config.translateOffset);
+  //X and Y meaing both the pixel position and the coordinate position is confusing and source of bugs fix
+  viewport.x = Math.abs(viewport.x) / Config.tileSize;
+  viewport.y = Math.abs(viewport.y) / Config.tileSize;
+  let indices = []; // this should have a length of 81;
+
+  for(let i = 0; i < Config.currentMap.grid.length; i++) {
+    let tileCords = indexToXY(i);
+    if(tileCords.x >= viewport.x && tileCords.x <= viewport.x + (Config.rowsToShow * 2)
+       && tileCords.y >= viewport.y && tileCords.y <= viewport.y + (Config.rowsToShow * 2)) {
+      indices.push(i);
+    }
+  }
+
+  return indices;
+}
