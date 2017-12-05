@@ -96,6 +96,7 @@ export const Game = {
   update(state) {
     if(this.state.currentScene.currentLevel.tick !== this.lastTick){
       this.lastTick = this.state.currentScene.currentLevel.tick;
+      this.moveMonsters();
       if (this.lastTick % Config.generateMonsterTick === 0) {
         //console.log("excuted");
         this.generateMonster();
@@ -139,6 +140,7 @@ export const Game = {
         }
 
       }
+
     }
   },
   useStairs(entity, stairs) {
@@ -218,6 +220,14 @@ export const Game = {
           //checkPlayerLevel(attacker);
         }
       }
+    }
+  },
+  moveMonsters() { //randomly
+    let entities = this.state.currentScene.currentLevel.entities;
+    entities = entities.filter(entity => entity.type === 'monster');
+    for(let i = 0; i < entities.length; i++) {
+      let key = MapUtil.getValidDirection(this.state.currentScene.currentLevel, entities[i]); //DUMB need to get range of player etc.
+      MapUtil.moveEntity(entities[i], key);
     }
   },
   generateMonster() {
