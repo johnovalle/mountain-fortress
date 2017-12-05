@@ -134,6 +134,7 @@ export const getValidDirection = (level, entity) => { //maybe this should be in 
   directionsMap[entity.index + 1] = "ArrowRight";
 
   let directions = Object.keys(directionsMap).filter((index) => {
+    index = parseInt(index);
     return tileDictionary[Config.currentMap.grid[index]].passible &&
     !getEntityAtIndex(level, index); //monsters cant walk on stairs or items like this consider revising with additional check type == item/stairs etc
   });
