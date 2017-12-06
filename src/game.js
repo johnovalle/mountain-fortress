@@ -130,9 +130,6 @@ export const Game = {
           } else if (entityAtIndex.type === "monster") {
             // console.log(entityAtIndex);
             this.attackEntity(this.state.player, entityAtIndex, this.state.currentScene.currentLevel);
-            if(entityAtIndex.hp > 0) {
-              this.attackEntity(entityAtIndex, this.state.player, this.state.currentScene.currentLevel);
-            }
           }
         } else {
           MapUtil.moveEntity(this.state.player, key);
@@ -203,23 +200,24 @@ export const Game = {
     }else{
       aIdentity = "The " + attacker.name;
       dIdentiy = "you";
-      posAdj = "your"
+      posAdj = "your";
     }
 
     let message = `${aIdentity} ${verb} ${dIdentiy} for ${damage} bringing ${posAdj} hp to ${defender.hp}`;
+    console.log(message);
     //messageLog.messages.push(message);
     if(defender.hp <= 0){
-      if(defender.type === "player" || defender.name === "black dragon") {
-        // end the game
-        Model.changeScene("gameOver");
-      }else {
+      // if(defender.type === "player" || defender.name === "black dragon") {
+      //   // end the game
+      //   Model.changeScene("gameOver");
+      // }else {
         Entity.removeEntityFromLevel(level, defender);
         if(attacker.type === "player"){
           attacker.xp += defender.xpVal;
           //check if player leveled
           //checkPlayerLevel(attacker);
         }
-      }
+      //}
     }
   },
   moveMonsters() { //randomly
@@ -247,6 +245,11 @@ export const Game = {
       if (direction) {  //direction check is needed in case monster is surrounded by monsters and cannot move
         if (direction.entity && direction.entity.name === "player") {
           //attack player
+          this.attackEntity(entities[i], this.state.player, this.state.currentScene.currentLevel);
+          if(this.state.player.hp <= 0){
+            Model.changeScene("gameOver");
+            break;
+          }
         } else {
           MapUtil.moveEntity(entities[i], direction.key);
         }
