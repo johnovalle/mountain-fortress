@@ -6,13 +6,13 @@ import { getRandomInArray } from './utility';
 export const indexToXY = (index) => {
   let x = index % Config.mapCols;
   let y = Math.floor(index / Config.mapCols);
-  return {x, y};
+  return {x, y, index};
 };
 
 export const indexTrueToXY = (index) => {
   let x = (index % Config.mapCols) * Config.tileSize;
   let y = Math.floor(index / Config.mapCols) * Config.tileSize;
-  return {x, y};
+  return {x, y, index};
 };
 
 export const xyToIndex = (coords) => {
@@ -128,16 +128,103 @@ export const getIndicesInViewport = () => {
 export const getValidDirection = (level, entity) => { //maybe this should be in entities
   let currentCoords = indexToXY(entity.index);
   let directionsMap = {};
-  directionsMap[entity.index - Config.mapCols] = "ArrowUp";
-  directionsMap[entity.index + Config.mapCols] = "ArrowDown";
-  directionsMap[entity.index - 1] = "ArrowLeft";
-  directionsMap[entity.index + 1] = "ArrowRight";
+  directionsMap[entity.index - Config.mapCols] = { key: "ArrowUp" };
+  directionsMap[entity.index + Config.mapCols] = { key:"ArrowDown" };
+  directionsMap[entity.index - 1] = { key: "ArrowLeft" };
+  directionsMap[entity.index + 1] = { key: "ArrowRight" };
 
-  let directions = Object.keys(directionsMap).filter((index) => {
-    index = parseInt(index);
-    return tileDictionary[Config.currentMap.grid[index]].passible &&
-    !getEntityAtIndex(level, index); //monsters cant walk on stairs or items like this consider revising with additional check type == item/stairs etc
-  });
+  let directions = checkForValidPoints(level, directionsMap);
   return directionsMap[getRandomInArray(directions)];
-
 }
+
+const checkForValidPoints = (level, pointMap) => {
+  return Object.keys(pointMap).filter((index) => {
+    index = parseInt(index);
+    pointMap[index].entity = getEntityAtIndex(level, index); //this should not happen unless tile.passbile on map
+    return tileDictionary[Config.currentMap.grid[index]].passible &&
+           (!pointMap[index].entity ||
+             pointMap[index].entity.type !== 'monster');
+  });
+}
+
+function getPoints(a,b,multiplier){
+  var dist = Math.abs(a.x - b.x);
+  var points = [];
+  for(var i = 1; i < dist; i++){
+    points.push({x: a.x+i*multiplier.x, y: a.y+i*multiplier.y, dist: dist});
+  }
+  return points;
+}
+
+function getAllPointsAtRange(originPoint, dist){
+  let a = {x: originPoint.x, y: originPoint.y - dist, dist: dist};
+  let b = {x: originPoint.x + dist, y: originPoint.y, dist: dist};
+  let c = {x: originPoint.x, y: originPoint.y + dist, dist: dist};
+  let d = {x: originPoint.x - dist, y: originPoint.y, dist: dist};
+
+  let points = [a,b,c,d]
+                .concat(getPoints(a,b, {x: 1, y: 1}))
+                .concat(getPoints(b,c, {x: -1, y: 1}))
+                .concat(getPoints(c,d, {x: -1, y: -1}))
+                .concat(getPoints(d,a, {x: 1, y: -1}));
+  return points;
+}
+
+export function getAllPoints(originPoint, dist){
+  let points = [];
+  for(var i = 1; i < dist; i++){
+    let x = getAllPointsAtRange(originPoint, i);
+    points = points.concat(x);
+  }
+  return points;
+}
+
+export const getDirectionTowardsPoint = (level, origin, dest) => {
+  let direction = { x: 0, y: 0 };
+  let xDif, yDif;
+  xDif = dest.x - origin.x;
+  if (xDif > 0) {
+    direction.x = 1;
+  } else if(xDif < 0) {
+    direction.x = -1;
+  }
+
+  yDif = dest.y - origin.y;
+  if (yDif > 0) {
+    direction.y = 1;
+  } else if(yDif < 0) {
+    direction.y = -1;
+  }
+  let directionsMap = getDirectionIndices(origin, direction);
+  let directions = checkForValidPoints(level, directionsMap);
+  return directionsMap[getRandomInArray(directions)];
+};
+
+const getDirectionIndices = (origin, direction) => { //min 1, max 3 possiblities
+  let possibleIndices = {};
+  if (direction.x !== 0 && direction.y !== 0){
+    //diagonal, skip for now
+    // { x: origin.x + direction.x,
+    //  y: origin.y + direction.y }
+  }
+  if (direction.y === -1) {
+    //possibleCoords.push({x: origin.x + direction.x, y: origin.y});
+    possibleIndices[origin.index - Config.mapCols] = { key: "ArrowUp" }
+  }
+  if (direction.y === 1) {
+    //possibleCoords.push({x: origin.x, y: origin.y + direction.y});
+    possibleIndices[origin.index + Config.mapCols] = { key:"ArrowDown" };
+  }
+  if (direction.x === -1) {
+    //possibleCoords.push({x: origin.x + direction.x, y: origin.y});
+    possibleIndices[origin.index - 1] = { key: "ArrowLeft" }
+  }
+  if (direction.x === 1) {
+    //possibleCoords.push({x: origin.x, y: origin.y + direction.y});
+    possibleIndices[origin.index + 1] = { key: "ArrowRight" };
+  }
+  //return possibleCoords;
+  return possibleIndices;
+};
+
+//need to make  dictionary with the 9 possible direction to clean up some of this duplication

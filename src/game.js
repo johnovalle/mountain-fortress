@@ -225,9 +225,33 @@ export const Game = {
   moveMonsters() { //randomly
     let entities = this.state.currentScene.currentLevel.entities;
     entities = entities.filter(entity => entity.type === 'monster');
-    for(let i = 0; i < entities.length; i++) {
-      let key = MapUtil.getValidDirection(this.state.currentScene.currentLevel, entities[i]); //DUMB need to get range of player etc.
-      MapUtil.moveEntity(entities[i], key);
+    let direction;
+    for(let i = 0; i < entities.length; i++) { // TODO do this only for monsters in viewport
+      let currentCoords = MapUtil.indexToXY(entities[i].index);
+      let sightPoints = MapUtil.getAllPoints(currentCoords, 5);
+      let sightIndices = sightPoints.filter((p) => {
+        p.index = MapUtil.xyToIndex(p); //these should contain their index?
+        return p.index === Model.state.player.index;
+      });
+      if(sightIndices.length > 0) {
+        console.log("can see the player");
+        direction = MapUtil.getDirectionTowardsPoint(this.state.currentScene.currentLevel, currentCoords, sightIndices[0]);
+        console.log(`direction chosen towards player is: ${direction}`);
+        direction = direction || MapUtil.getValidDirection(this.state.currentScene.currentLevel, entities[i]); //This is a cheat
+        //if monster can't pass through wall or two monsters want to occupy the same place in the direction on the player
+        //really need a weigthed system so if it's first choice isn't available it'll choose something else
+        //but without diagonal movement this isnt really possible.
+      } else {
+        direction = MapUtil.getValidDirection(this.state.currentScene.currentLevel, entities[i]);
+      }
+      if (direction) {  //direction check is needed in case monster is surrounded by monsters and cannot move
+        if (direction.entity && direction.entity.name === "player") {
+          //attack player
+        } else {
+          MapUtil.moveEntity(entities[i], direction.key);
+        }
+      }
+
     }
   },
   generateMonster() {
