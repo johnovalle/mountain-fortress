@@ -13,6 +13,10 @@ const model = {
   scenes: {},
   levels: {}, //This might not even need to be here
   levelCounter: 1,
+  restart() {
+    this.levelCounter = 1;
+    this.levels = {};
+  },
   addScene(name, onEnter, controlMap) {
     //console.log(this);
     if(!this.scenes[name]){

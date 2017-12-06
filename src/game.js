@@ -79,6 +79,7 @@ export const Game = {
     Model.addScene("gameOver", ()=> { console.log("enter game over scene");
       Model.state.playerMoved = false;
       Model.state.lastMoveFinished = true;
+      Model.restart();
     }, ControllerMaps.gameOver );
     Model.addScene("play", () => { console.log("enter play scene");
       let level1 = Model.createLevel();
