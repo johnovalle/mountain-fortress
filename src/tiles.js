@@ -18,8 +18,8 @@ export const tileDictionary = {
 };
 
 export const monsterDictionary = {
-  8: { name:"giant rat", subtype:"animal", hp: [1,4], weapon: { damage: [1,4], verb: "bites" }, xpVal: 50, damageModifier: 0, armor: { protection: 0 }, threat: 1 },
-  9: { name:"green slime", subtype:"ooze", hp: [1,6], weapon: { damage: [1,4], verb: "splashes" }, xpVal: 75, damageModifier: 0, armor: { protection: 0 }, threat: 1 },
+  8: { name:"giant rat", subtype:"animal", hp: [1,3], weapon: { damage: [1,2], verb: "bites" }, xpVal: 50, damageModifier: 0, armor: { protection: 0 }, threat: 1 },
+  9: { name:"green slime", subtype:"ooze", hp: [1,4], weapon: { damage: [1,3], verb: "splashes" }, xpVal: 75, damageModifier: 0, armor: { protection: 0 }, threat: 1 },
   10: { name:"wild dog", subtype:"animal", hp: [1,6], weapon: { damage: [1,6], verb: "bites" }, xpVal: 80, damageModifier: 0, armor: { protection: 0 }, threat: 2 },
   11: { name:"goblin", subtype:"goblin", hp: [1,6], weapon: { damage: [1,6], verb: "claws" }, xpVal: 120, damageModifier: 0, armor: { protection: 1 }, threat: 3 },
   12: { name:"kobld", subtype:"goblin", hp: [2,4], weapon: { damage: [1,6], verb: "stabs" }, xpVal: 150, damageModifier: 1, armor: { protection: 0 }, threat: 4 },

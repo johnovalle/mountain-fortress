@@ -51,6 +51,16 @@ const animateEntityMovement = (state) => {
   }
 }
 
+const playerXpTable = { //this should be computed using a config value
+  1: 200,
+  2: 400,
+  3: 800,
+  4: 1600,
+  5: 3200,
+  6: 6400,
+  7: 12800
+};
+
 export const Game = {
   state: Model.state,
   loadGame(){
@@ -215,7 +225,7 @@ export const Game = {
         if(attacker.type === "player"){
           attacker.xp += defender.xpVal;
           //check if player leveled
-          //checkPlayerLevel(attacker);
+          this.checkPlayerLevel();
         }
       //}
     }
@@ -255,6 +265,20 @@ export const Game = {
         }
       }
 
+    }
+  },
+  checkPlayerLevel() { //in a more robust version monsters could also level but I'll keep this simple
+    let player = Model.state.player;
+    console.log(player.xp, playerXpTable[player.level]);
+    if(player.xp >= playerXpTable[player.level]){
+      player.level++;
+      player.maxHp += 10;
+      player.hp += 10; //we'll assume the player got a full roll, if too hard player.hp = player.maxHp
+      player.xp = 0;
+      player.damageModifier++;
+      //messageLog.messages.push(`Nice work! You leveled up! You are level ${player.level}`);
+      //messageLog.messages.push("You gained 10 hit points and 1 point of damage!");
+      console.log(`player leveled to ${player.level}, hp: ${player.hp}`);
     }
   },
   generateMonster() {
