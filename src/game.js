@@ -134,13 +134,15 @@ export const Game = {
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
         //console.log(this.state.currentScene.currentLevel.entities, entityAtIndex)
-        if (entityAtIndex) {
+        if (entityAtIndex) { //need to reqrite this block as this will return an array of entities at an index
           if (entityAtIndex.type === "stairs") {
             this.useStairs(this.state.player, entityAtIndex);
             Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
           } else if (entityAtIndex.type === "monster") {
             // console.log(entityAtIndex);
             this.attackEntity(this.state.player, entityAtIndex, this.state.currentScene.currentLevel);
+          } else if (entityAtIndex.type === "item") {
+            this.getItem(this.state.player, entityAtIndex, this.state.currentScene.currentLevel);
           }
         } else {
           MapUtil.moveEntity(this.state.player, key);
@@ -281,6 +283,24 @@ export const Game = {
       //messageLog.messages.push("You gained 10 hit points and 1 point of damage!");
       console.log(`player leveled to ${player.level}, hp: ${player.hp}`);
     }
+  },
+  getItem(entity, item, level) {
+    let message;
+    let itemProps = item.itemProps;
+    if(itemProps.subtype === "weapon"){
+      entity.weapon = itemProps;
+      message = `You found a ${itemProps.name}!`;
+    }
+    if(itemProps.subtype === "armor"){
+      entity.armor = itemProps;
+      message = `You found ${itemProps.name}!`;
+    }
+    if(itemProps.subtype === "health"){
+      entity.hp += itemProps.heals;
+      message = `You drink a ${itemProps.name}, you heal ${itemProps.heals} points!`; //should probably have a verb too
+    }
+    //messageLog.messages.push(message);
+    Entity.removeEntityFromLevel(level, item);
   },
   generateMonster() {
     let viewport = MapUtil.getIndicesInViewport();

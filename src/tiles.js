@@ -15,6 +15,16 @@ export const tileDictionary = {
   13: {passible: false, type: "monster"},
   14: {passible: false, type: "monster"},
   15: {passible: false, type: "monster"},
+  16: {passible: true, type: "item"},
+  17: {passible: true, type: "item"},
+  18: {passible: true, type: "item"},
+  19: {passible: true, type: "item"},
+  20: {passible: true, type: "item"},
+  23: {passible: true, type: "item"},
+  24: {passible: true, type: "item"},
+  25: {passible: true, type: "item"},
+  26: {passible: true, type: "item"},
+  27: {passible: true, type: "item"},
 };
 
 export const monsterDictionary = {
@@ -26,4 +36,18 @@ export const monsterDictionary = {
   13: { name:"orc", subtype:"goblin", hp: [2,6], weapon: { damage: [1,6], verb: "smacks" }, xpVal: 175, damageModifier: 1, armor: { protection: 1 }, threat: 5 },
   14: { name:"skeleton", subtype:"undead", hp: [2,8], weapon: { damage: [1,8], verb: "slashes" }, xpVal: 250, damageModifier: 2, armor: { protection: 1 }, threat: 6 },
   15: { name:"black dragon", subtype:"dragon", hp: [3,10], weapon: { damage: [1,10], verb: "bashes" }, xpVal: 450, damageModifier: 4, armor: { protection: 4 }, threat: Infinity }
+};
+
+export const itemDictionary = {
+  16: {name: "dagger", type:"weapon", subtype: "weapon", damage: [1,6], verb: "stab"},
+  17: {name: "short sword", type:"weapon", subtype: "weapon", damage: [1,8], verb: "slash"},
+  18: {name: "dark sword", type:"weapon", subtype: "weapon", damage: [1,10], verb: "slash"},
+  19: {name: "emerald mace", type:"weapon", subtype: "weapon", damage: [2,6], verb: "bash"},
+  20: {name: "ruby axe", type:"weapon", subtype: "weapon", damage: [2,8], verb: "hack"},
+  23: {name: "leather armor", subtype: "armor", protection: 1},
+  24: {name: "chain armor", subtype: "armor", protection: 2},
+  25: {name: "scale armor", subtype: "armor", protection: 3},
+  26: {name: "plate armor", subtype: "armor", protection: 4},
+  27: {name: "star armor", subtype: "armor", protection: 5},
+  //15: {name: "health potion", subtype: "health", heals: 10}
 };

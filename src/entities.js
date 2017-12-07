@@ -82,6 +82,10 @@ export const populateLevel = (level) => {
       getRandomAvailable(level.map, level.entities)
     );
   }
+  // items generated should be numMonsters / 3 (monsters will also drop food sometimes later);
+  // no more than one weapon or armor should generate on a level,
+  // weapons and armor worse than those that have been generated should not generate.
+  // maybe should always generate weapons and armor in order or close to it?
 };
 
 export const generateMonster = (level, viewport) => {
