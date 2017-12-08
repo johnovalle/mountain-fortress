@@ -70,7 +70,7 @@ const model = {
     return level;
   },
   handleKeyPress(key) {
-    // console.log(key)
+    console.log(key)
     // console.log("this", this, this.state);
     let request;
     if(typeof this.state.currentScene.controlMap[key] === "function"){

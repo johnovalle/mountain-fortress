@@ -69,21 +69,45 @@ export const moveEntity = (entity, key) => {
   //send an action to dispatcher telling the draw to refresh
   entity.nextY = entity.y;
   entity.nextX = entity.x;
-  if(key === "ArrowUp" && currentCoords.y > 0){
+  if(key === "up" && currentCoords.y > 0){
     entity.index -= Config.mapCols;
     entity.nextY -= Config.tileSize;
   }
-  if(key === "ArrowDown" && currentCoords.y < Config.mapRows - 1){
+  if(key === "down" && currentCoords.y < Config.mapRows - 1){
     entity.index += Config.mapCols;
     entity.nextY += Config.tileSize;
   }
-  if(key === "ArrowLeft" && currentCoords.x > 0){
+  if(key === "left" && currentCoords.x > 0){
     entity.index -= 1;
     entity.nextX -= Config.tileSize;
   }
-  if(key === "ArrowRight" && currentCoords.x < Config.mapCols - 1){
+  if(key === "right" && currentCoords.x < Config.mapCols - 1){
     entity.index += 1;
     entity.nextX += Config.tileSize;
+  }
+  if(key === "up-left" && currentCoords.y > 0 && currentCoords.x > 0){
+    entity.index -= Config.mapCols + 1;
+    entity.nextY -= Config.tileSize;
+    entity.nextX -= Config.tileSize;
+  }
+  if(key === "up-right" && currentCoords.y > 0 && currentCoords.x < Config.mapCols - 1){
+    entity.index -= Config.mapCols - 1;
+    entity.nextY -= Config.tileSize;
+    entity.nextX += Config.tileSize;
+  }
+  if(key === "down-left" && currentCoords.y < Config.mapRows - 1 && currentCoords.x > 0){
+    entity.index += Config.mapCols - 1;
+    entity.nextY += Config.tileSize;
+    entity.nextX -= Config.tileSize;
+  }
+  if(key === "down-right" && currentCoords.y < Config.mapRows - 1 && currentCoords.x < Config.mapCols - 1){
+    entity.index += Config.mapCols + 1;
+    entity.nextY += Config.tileSize;
+    entity.nextX += Config.tileSize;
+  }
+  if(key === "wait"){
+    // entity.index;
+    // entity.nextX += Config.tileSize;
   }
   // console.log(entity);
 };
@@ -91,17 +115,32 @@ export const moveEntity = (entity, key) => {
 export const checkIndex = (entity, key) => { //Think about drying this up
   let currentCoords = indexToXY(entity.index);
   let newIndex;
-  if(key === "ArrowUp" && currentCoords.y > 0){
+  if(key === "up" && currentCoords.y > 0){
     newIndex = entity.index - Config.mapCols;
   }
-  if(key === "ArrowDown" && currentCoords.y < Config.mapRows - 1){
+  if(key === "down" && currentCoords.y < Config.mapRows - 1){
     newIndex = entity.index + Config.mapCols;
   }
-  if(key === "ArrowLeft" && currentCoords.x > 0){
+  if(key === "left" && currentCoords.x > 0){
     newIndex = entity.index - 1;
   }
-  if(key === "ArrowRight" && currentCoords.x < Config.mapCols - 1){
+  if(key === "right" && currentCoords.x < Config.mapCols - 1){
     newIndex = entity.index + 1;
+  }
+  if(key === "up-left" && currentCoords.y > 0 && currentCoords.x > 0 ){
+    newIndex = entity.index - Config.mapCols - 1;
+  }
+  if(key === "up-right" && currentCoords.y > 0 && currentCoords.x < Config.mapCols - 1){
+    newIndex = entity.index - Config.mapCols + 1;
+  }
+  if(key === "down-left" && currentCoords.y < Config.mapRows - 1 && currentCoords.x > 0){
+    newIndex = entity.index + Config.mapCols - 1;
+  }
+  if(key === "down-right"&& currentCoords.y < Config.mapRows - 1 && currentCoords.x < Config.mapCols - 1){
+    newIndex = entity.index + Config.mapCols + 1;
+  }
+  if(key === "wait" && currentCoords.x < Config.mapCols - 1){
+    newIndex = entity.index;
   }
    //This wont handle entities at the moment, should I check against two maps or fuse them?
   return { target: tileDictionary[Config.currentMap.grid[newIndex]], index: newIndex };
@@ -128,10 +167,10 @@ export const getIndicesInViewport = () => {
 export const getValidDirection = (level, entity) => { //maybe this should be in entities
   let currentCoords = indexToXY(entity.index);
   let directionsMap = {};
-  directionsMap[entity.index - Config.mapCols] = { key: "ArrowUp" };
-  directionsMap[entity.index + Config.mapCols] = { key:"ArrowDown" };
-  directionsMap[entity.index - 1] = { key: "ArrowLeft" };
-  directionsMap[entity.index + 1] = { key: "ArrowRight" };
+  directionsMap[entity.index - Config.mapCols] = { key: "up" };
+  directionsMap[entity.index + Config.mapCols] = { key:"down" };
+  directionsMap[entity.index - 1] = { key: "left" };
+  directionsMap[entity.index + 1] = { key: "right" };
 
   let directions = checkForValidPoints(level, directionsMap);
   return directionsMap[getRandomInArray(directions)];
@@ -216,19 +255,19 @@ const getDirectionIndices = (origin, direction) => { //min 1, max 3 possiblities
   }
   if (direction.y === -1) {
     //possibleCoords.push({x: origin.x + direction.x, y: origin.y});
-    possibleIndices[origin.index - Config.mapCols] = { key: "ArrowUp" }
+    possibleIndices[origin.index - Config.mapCols] = { key: "up" }
   }
   if (direction.y === 1) {
     //possibleCoords.push({x: origin.x, y: origin.y + direction.y});
-    possibleIndices[origin.index + Config.mapCols] = { key:"ArrowDown" };
+    possibleIndices[origin.index + Config.mapCols] = { key:"down" };
   }
   if (direction.x === -1) {
     //possibleCoords.push({x: origin.x + direction.x, y: origin.y});
-    possibleIndices[origin.index - 1] = { key: "ArrowLeft" }
+    possibleIndices[origin.index - 1] = { key: "left" }
   }
   if (direction.x === 1) {
     //possibleCoords.push({x: origin.x, y: origin.y + direction.y});
-    possibleIndices[origin.index + 1] = { key: "ArrowRight" };
+    possibleIndices[origin.index + 1] = { key: "right" };
   }
   //return possibleCoords;
   return possibleIndices;
