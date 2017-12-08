@@ -171,6 +171,10 @@ export const getValidDirection = (level, entity) => { //maybe this should be in 
   directionsMap[entity.index + Config.mapCols] = { key:"down" };
   directionsMap[entity.index - 1] = { key: "left" };
   directionsMap[entity.index + 1] = { key: "right" };
+  directionsMap[entity.index - Config.mapCols - 1] = { key: "up-left" };
+  directionsMap[entity.index - Config.mapCols + 1] = { key:"up-right" };
+  directionsMap[entity.index + Config.mapCols - 1] = { key: "down-left" };
+  directionsMap[entity.index + Config.mapCols + 1] = { key: "down-right" };
 
   let directions = checkForValidPoints(level, directionsMap);
   return directionsMap[getRandomInArray(directions)];
@@ -248,10 +252,25 @@ export const getDirectionTowardsPoint = (level, origin, dest) => {
 
 const getDirectionIndices = (origin, direction) => { //min 1, max 3 possiblities
   let possibleIndices = {};
+  //some diagonals should get sent even if they are parallel but should prefer the parallel route...
+  //similarly it should prefer diagonal routes when available
+  //pass pack two arrays, primary and secondary routes, if there are no valid primary routes evaluate secondary routes
   if (direction.x !== 0 && direction.y !== 0){
     //diagonal, skip for now
     // { x: origin.x + direction.x,
     //  y: origin.y + direction.y }
+    if(direction.y === -1 && direction.x === -1) {
+      possibleIndices[origin.index - Config.mapCols - 1] = { key: "up-left" }
+    }
+    if(direction.y === -1 && direction.x === 1) {
+      possibleIndices[origin.index - Config.mapCols + 1] = { key: "up-right" }
+    }
+    if(direction.y === 1 && direction.x === -1) {
+      possibleIndices[origin.index + Config.mapCols - 1] = { key: "down-left" }
+    }
+    if(direction.y === 1 && direction.x === 1) {
+      possibleIndices[origin.index + Config.mapCols + 1] = { key: "down-right" }
+    }
   }
   if (direction.y === -1) {
     //possibleCoords.push({x: origin.x + direction.x, y: origin.y});
