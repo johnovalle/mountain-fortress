@@ -48,7 +48,8 @@ const drawEntities = (level, sightIndices) => { //Temporary
   // probably also need to store the offset as X and Y so the screen shift will also be smooth
   for(let i = 0; i <  level.entities.length; i++){
     let entity = level.entities[i];
-    if (sightIndices.indexOf(entity.index) !== -1) {
+    //console.log(entity);
+    if (sightIndices.indexOf(entity.index) !== -1 || entity.type !== "monster") {
     //console.log(entity.x, entity.y);
     // these properties can be stored on the entity itself rather than be calculated everytime
       let sx = (entity.key % spritesheet.sheetCols) * spritesheet.tileSize;

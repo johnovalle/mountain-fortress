@@ -125,7 +125,7 @@ export const Game = {
       //if there is something there handle it (stairs, monster, item);
 
       let targetAtIndex = MapUtil.checkIndex(this.state.player, key);
-      let entityAtIndex = Entity.getEntityAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
+      let entitiesAtIndex = Entity.getEntitiesAtIndex(this.state.currentScene.currentLevel, targetAtIndex.index);
       if(targetAtIndex.target.passible){
         this.state.currentScene.currentLevel.tick++;
         this.gameTick++;
@@ -134,15 +134,29 @@ export const Game = {
         this.state.playerMoved = true;
         this.state.lastMoveFinished = false;
         //console.log(this.state.currentScene.currentLevel.entities, entityAtIndex)
-        if (entityAtIndex) { //need to reqrite this block as this will return an array of entities at an index
-          if (entityAtIndex.type === "stairs") {
-            this.useStairs(this.state.player, entityAtIndex);
+        if (entitiesAtIndex.length > 0) { //need to reqrite this block as this will return an array of entities at an index
+          let monsterIndex = null;
+          let stairIndex = null;
+          let itemIndex = null; //there really shouldn't be more than one of each
+          for (let i = 0; i < entitiesAtIndex.length; i++) {
+            if(entitiesAtIndex[i].type === "stairs") {
+              stairIndex = i;
+            } else if(entitiesAtIndex[i].type === "monster") {
+              monsterIndex = i;
+            } else if(entitiesAtIndex[i].type === "item") {
+              itemIndex = i;
+            }
+          }
+          if (monsterIndex !== null) {
+            this.attackEntity(this.state.player, entitiesAtIndex[monsterIndex], this.state.currentScene.currentLevel);
+          } else if (stairIndex !== null) {
+            //MapUtil.moveEntity(this.state.player, key);
+            this.useStairs(this.state.player, entitiesAtIndex[stairIndex]);
             Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
-          } else if (entityAtIndex.type === "monster") {
-            // console.log(entityAtIndex);
-            this.attackEntity(this.state.player, entityAtIndex, this.state.currentScene.currentLevel);
-          } else if (entityAtIndex.type === "item") {
-            this.getItem(this.state.player, entityAtIndex, this.state.currentScene.currentLevel);
+          } else if (itemIndex !== null) {
+            this.getItem(this.state.player, entitiesAtIndex[itemIndex], this.state.currentScene.currentLevel);
+            MapUtil.moveEntity(this.state.player, key);
+            Dispatcher.sendMessage({action: "Player Moved", payload: [this.state.currentScene]});
           }
         } else {
           MapUtil.moveEntity(this.state.player, key);
@@ -247,7 +261,7 @@ export const Game = {
       if(sightIndices.length > 0) {
         console.log("can see the player");
         direction = MapUtil.getDirectionTowardsPoint(this.state.currentScene.currentLevel, currentCoords, sightIndices[0]);
-        console.log(`direction chosen towards player is: ${direction}`);
+        console.log(`direction chosen towards player is:`, direction);
         direction = direction || MapUtil.getValidDirection(this.state.currentScene.currentLevel, entities[i]); //This is a cheat
         //if monster can't pass through wall or two monsters want to occupy the same place in the direction on the player
         //really need a weigthed system so if it's first choice isn't available it'll choose something else
@@ -256,12 +270,22 @@ export const Game = {
         direction = MapUtil.getValidDirection(this.state.currentScene.currentLevel, entities[i]);
       }
       if (direction) {  //direction check is needed in case monster is surrounded by monsters and cannot move
-        if (direction.entity && direction.entity.name === "player") {
+        if (direction.entities.length > 0) {
+          let playerIndex = null
+          for(let i = 0; i < direction.entities.length; i++) {
+            if(direction.entities[i].name === "player"){
+              playerIndex = i;
+            }
+          }
           //attack player
-          this.attackEntity(entities[i], this.state.player, this.state.currentScene.currentLevel);
-          if(this.state.player.hp <= 0){
-            Model.changeScene("gameOver");
-            break;
+          if(playerIndex !== null) {
+            this.attackEntity(entities[i], this.state.player, this.state.currentScene.currentLevel);
+            if(this.state.player.hp <= 0){
+              Model.changeScene("gameOver");
+              break;
+            }
+          } else {
+            MapUtil.moveEntity(entities[i], direction.key);
           }
         } else {
           MapUtil.moveEntity(entities[i], direction.key);

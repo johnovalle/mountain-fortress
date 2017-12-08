@@ -118,12 +118,13 @@ export const removeEntityFromLevel = (level, entity) => {
   level.entities.splice(index,1);
 };
 
-export const getEntityAtIndex = (level, index) => {
+export const getEntitiesAtIndex = (level, index) => {
+  let entities = [];
   for(let i = 0; i < level.entities.length; i++){
     let entity = level.entities[i];
     if(entity.index === index){
-      return entity;
+      entities.push(entity);
     }
   }
-  return null;
+  return entities;
 };

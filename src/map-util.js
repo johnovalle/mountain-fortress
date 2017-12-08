@@ -1,6 +1,6 @@
 import Config from "./config";
 import { tileDictionary } from "./tiles";
-import { getEntityAtIndex } from './entities';
+import { getEntitiesAtIndex } from './entities';
 import { getRandomInArray } from './utility';
 
 export const indexToXY = (index) => {
@@ -139,11 +139,18 @@ export const getValidDirection = (level, entity) => { //maybe this should be in 
 
 const checkForValidPoints = (level, pointMap) => {
   return Object.keys(pointMap).filter((index) => {
+    let valid = true;
     index = parseInt(index);
-    pointMap[index].entity = getEntityAtIndex(level, index); //this should not happen unless tile.passbile on map
-    return tileDictionary[Config.currentMap.grid[index]].passible &&
-           (!pointMap[index].entity ||
-             pointMap[index].entity.type !== 'monster');
+    if (tileDictionary[Config.currentMap.grid[index]].passible) {
+      pointMap[index].entities = getEntitiesAtIndex(level, index); //this should not happen unless tile.passbile on map
+      for (let i = 0; i < pointMap[index].entities.length; i++) {
+        if(pointMap[index].entities[i].type === 'monster') {
+          valid = false;
+        }
+      }
+      return valid;
+    }
+    return false;
   });
 }
 
