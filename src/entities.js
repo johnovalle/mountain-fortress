@@ -1,5 +1,5 @@
 import Config from "./config";
-import { tileDictionary, monsterDictionary } from "./tiles";
+import { tileDictionary, monsterDictionary, itemDictionary } from "./tiles";
 import { rollDice, fullDice, firstDieFull, getNumInRange, getRandomInArray } from './utility';
 import { getRandomAvailable } from "./roomGen";
 
@@ -53,8 +53,8 @@ export const buildPlayer = (level, key, location) => {
   player.xp = 0;
   player.level = 1;
   player.damageModifier = 1;
-  player.weapon = {name: "hand", damage: [1,4], verb: "punch", subtype: "weapon"}
-  player.armor = {name: "cloth", protection: 0}
+  player.weapon = {name: "hand", damage: [1,4], verb: "punch", subtype: "weapon", threat: 0}
+  player.armor = {name: "cloth", protection: 0, threat: 0}
   return player;
 };
 
@@ -65,6 +65,14 @@ export const buildMonster = (level, key, index) => {
   monster.hp = firstDieFull(...monsterRef.hp);
   monster.maxHp = monster.hp;
   return monster;
+};
+
+export const buildItem = (level, key, index) => {
+  let item = buildEntity(level, key, index);
+  item.itemProps = itemDictionary[item.key];
+  //add damageModifier to monster table
+  console.log(item);
+  return item;
 };
 
 export const populateLevel = (level) => {
@@ -79,6 +87,15 @@ export const populateLevel = (level) => {
     buildMonster(
       level,
       getRandomInArray(possibleMonsters),
+      getRandomAvailable(level.map, level.entities)
+    );
+  }
+  let numItems = Math.floor(numMonsters / 3);
+  let possibleItems = getPossibleItems(level);
+  for(let i = 0; i < numItems; i++){
+    buildItem(
+      level,
+      getRandomInArray(possibleItems),
       getRandomAvailable(level.map, level.entities)
     );
   }
@@ -102,6 +119,13 @@ const getPossibleMonsters = (level) => {
   return Object.keys(monsterDictionary).filter((monKey) => {
     let monster = monsterDictionary[monKey];
     return monster.threat <= level.baseDifficulty && monster.threat >= Math.floor(level.baseDifficulty / 2);
+  });
+}
+
+const getPossibleItems = (level) => {
+  return Object.keys(itemDictionary).filter((iKey) => {
+    let item = itemDictionary[iKey];
+    return item.threat <= level.baseDifficulty && item.threat >= Math.floor(level.baseDifficulty / 2);
   });
 }
 

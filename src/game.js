@@ -311,11 +311,11 @@ export const Game = {
   getItem(entity, item, level) {
     let message;
     let itemProps = item.itemProps;
-    if(itemProps.subtype === "weapon"){
+    if(itemProps.subtype === "weapon" && entity.weapon.threat < itemProps.threat){
       entity.weapon = itemProps;
       message = `You found a ${itemProps.name}!`;
     }
-    if(itemProps.subtype === "armor"){
+    if(itemProps.subtype === "armor" && entity.armor.threat < itemProps.threat){
       entity.armor = itemProps;
       message = `You found ${itemProps.name}!`;
     }
@@ -324,6 +324,7 @@ export const Game = {
       message = `You drink a ${itemProps.name}, you heal ${itemProps.heals} points!`; //should probably have a verb too
     }
     //messageLog.messages.push(message);
+    console.log(message);
     Entity.removeEntityFromLevel(level, item);
   },
   generateMonster() {

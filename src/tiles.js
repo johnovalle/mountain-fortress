@@ -20,11 +20,11 @@ export const tileDictionary = {
   18: {passible: true, type: "item"},
   19: {passible: true, type: "item"},
   20: {passible: true, type: "item"},
-  23: {passible: true, type: "item"},
   24: {passible: true, type: "item"},
   25: {passible: true, type: "item"},
   26: {passible: true, type: "item"},
   27: {passible: true, type: "item"},
+  28: {passible: true, type: "item"},
 };
 
 export const monsterDictionary = {
@@ -38,16 +38,16 @@ export const monsterDictionary = {
   15: { name:"black dragon", subtype:"dragon", hp: [3,10], weapon: { damage: [1,10], verb: "bashes" }, xpVal: 450, damageModifier: 4, armor: { protection: 4 }, threat: Infinity }
 };
 
-export const itemDictionary = {
-  16: {name: "dagger", type:"weapon", subtype: "weapon", damage: [1,6], verb: "stab"},
-  17: {name: "short sword", type:"weapon", subtype: "weapon", damage: [1,8], verb: "slash"},
-  18: {name: "dark sword", type:"weapon", subtype: "weapon", damage: [1,10], verb: "slash"},
-  19: {name: "emerald mace", type:"weapon", subtype: "weapon", damage: [2,6], verb: "bash"},
-  20: {name: "ruby axe", type:"weapon", subtype: "weapon", damage: [2,8], verb: "hack"},
-  23: {name: "leather armor", subtype: "armor", protection: 1},
-  24: {name: "chain armor", subtype: "armor", protection: 2},
-  25: {name: "scale armor", subtype: "armor", protection: 3},
-  26: {name: "plate armor", subtype: "armor", protection: 4},
-  27: {name: "star armor", subtype: "armor", protection: 5},
+export const itemDictionary = {// threat should be threshold
+  16: {name: "dagger", type:"weapon", subtype: "weapon", damage: [1,6], verb: "stab", threat: 1},
+  17: {name: "short sword", type:"weapon", subtype: "weapon", damage: [1,8], verb: "slash", threat: 3},
+  18: {name: "dark sword", type:"weapon", subtype: "weapon", damage: [1,10], verb: "slash", threat: 5},
+  19: {name: "emerald mace", type:"weapon", subtype: "weapon", damage: [2,6], verb: "bash", threat: 6},
+  20: {name: "ruby axe", type:"weapon", subtype: "weapon", damage: [2,8], verb: "hack", threat: 8},
+  24: {name: "leather armor", subtype: "armor", protection: 1, threat: 1},
+  25: {name: "chain armor", subtype: "armor", protection: 2, threat: 3},
+  26: {name: "scale armor", subtype: "armor", protection: 3, threat: 5},
+  27: {name: "plate armor", subtype: "armor", protection: 4, threat: 7},
+  28: {name: "star armor", subtype: "armor", protection: 5, threat: 9},
   //15: {name: "health potion", subtype: "health", heals: 10}
 };
