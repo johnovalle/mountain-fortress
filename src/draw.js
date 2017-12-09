@@ -8,6 +8,7 @@ import Dispatcher from "./dispatcher";
 
 let currentCoords = null;
 let translateOffset = {x: 0, y: 0};
+let topOffest = 100;
 
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
@@ -19,12 +20,13 @@ export const draw = (state) => {
       return MapUtil.xyToIndex(p);
     });
     sightIndices.push(Model.state.player.index);
+    let viewport = MapUtil.getIndicesInViewport();
     //console.log(translateOffset);
     //ctx.translate(translateOffset.x * -spritesheet.tileSize, translateOffset.y * -spritesheet.tileSize);
-    ctx.translate(translateOffset.x, translateOffset.y);
-    drawMap(state.currentScene.currentLevel.map);
-    drawEntities(state.currentScene.currentLevel, sightIndices);
-    drawFog(state.currentScene.currentLevel.map, sightIndices);
+    ctx.translate(translateOffset.x, translateOffset.y + 100);
+    drawMap(state.currentScene.currentLevel.map, viewport);
+    drawEntities(state.currentScene.currentLevel, sightIndices, viewport);
+    drawFog(state.currentScene.currentLevel.map, sightIndices, viewport);
   }
   ctx.restore();
 }
@@ -40,7 +42,7 @@ const setCameraOffset = () => {
 }
 
 //TODO DRY up these two methods
-const drawEntities = (level, sightIndices) => { //Temporary
+const drawEntities = (level, sightIndices, viewport) => { //Temporary
   //buildEntityMap(level);
   //console.log("entitiesMap", level.entitiesMap);
   // drawMap(level.entitiesMap);
@@ -49,7 +51,7 @@ const drawEntities = (level, sightIndices) => { //Temporary
   for(let i = 0; i <  level.entities.length; i++){
     let entity = level.entities[i];
     //console.log(entity);
-    if (sightIndices.indexOf(entity.index) !== -1 || entity.type !== "monster") {
+    if (viewport.indexOf(entity.index) !== -1 && (sightIndices.indexOf(entity.index) !== -1 || entity.type !== "monster")) {
     //console.log(entity.x, entity.y);
     // these properties can be stored on the entity itself rather than be calculated everytime
       let sx = (entity.key % spritesheet.sheetCols) * spritesheet.tileSize;
@@ -60,10 +62,10 @@ const drawEntities = (level, sightIndices) => { //Temporary
   }
 }
 
-const drawMap = (map) => { //check viewport here and only draw what's in the viewport
+const drawMap = (map, viewport) => { //check viewport here and only draw what's in the viewport
   for(let i = 0, len = map.grid.length;  i < len; i++){
     let tile = map.grid[i];
-    if(tile !== 0 || map.isBG){
+    if(viewport.indexOf(i) !== -1 && (tile !== 0 || map.isBG)){
       let x = (i % map.mapCols) * Config.tileSize; // index / width of drawing area in tiles * tile size
       let y = Math.floor(i / map.mapCols) * Config.tileSize;
       let sx = (tile % spritesheet.sheetCols) * spritesheet.tileSize // tile value against width of tilesheet in tiles * tile size on sheet
@@ -73,9 +75,9 @@ const drawMap = (map) => { //check viewport here and only draw what's in the vie
     }
   }
 };
-const drawFog = (map, sightIndices) => {
+const drawFog = (map, sightIndices, viewport) => {
   for(let i = 0, len = map.grid.length;  i < len; i++){
-    if (sightIndices.indexOf(i) === -1) {
+    if (viewport.indexOf(i) !== -1 && sightIndices.indexOf(i) === -1) {
       let x = (i % map.mapCols) * Config.tileSize; // index / width of drawing area in tiles * tile size
       let y = Math.floor(i / map.mapCols) * Config.tileSize;
       ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';

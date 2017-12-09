@@ -146,7 +146,7 @@ export const checkIndex = (entity, key) => { //Think about drying this up
   return { target: tileDictionary[Config.currentMap.grid[newIndex]], index: newIndex };
 };
 
-export const getIndicesInViewport = () => {
+export const getIndicesInViewport = () => { //takes a var to grab extra map cells around the the viewport
   let viewport = Object.assign({}, Config.translateOffset);
   //X and Y meaing both the pixel position and the coordinate position is confusing and source of bugs fix
   viewport.x = Math.abs(viewport.x) / Config.tileSize;

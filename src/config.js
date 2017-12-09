@@ -1,7 +1,7 @@
 import Dispatcher from "./dispatcher";
 
 const config = {
-  canvasHeight: 576,
+  canvasHeight: 776,
   canvasWidth: 576,
   moveAniSpeed: 8,
   tileSize: 64,
