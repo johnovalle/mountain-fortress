@@ -5,6 +5,7 @@ import {buildEntityMap} from "./entities";
 import * as MapUtil from "./map-util";
 import Model from "./model";
 import Dispatcher from "./dispatcher";
+import { messageLog } from './messageLog';
 
 let currentCoords = null;
 let translateOffset = {x: 0, y: 0};
@@ -12,8 +13,9 @@ let topOffest = 100;
 
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
-  ctx.save();
+
   if(state.currentScene.currentLevel && state.currentScene.currentLevel.map) { //Temporary
+    ctx.save();
     let currentCoords = MapUtil.indexToXY(Model.state.player.index);
     let sightPoints = MapUtil.getAllPoints(currentCoords, 4);
     let sightIndices = sightPoints.map((p) => {
@@ -28,11 +30,14 @@ export const draw = (state) => {
     drawMap(state.currentScene.currentLevel.map, viewport);
     drawEntities(state.currentScene.currentLevel, sightIndices, viewport);
     drawFog(state.currentScene.currentLevel.map, sightIndices, viewport);
+    ctx.restore();
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, Config.canvasWidth, topOffest);
+    ctx.fillRect(0, Config.canvasHeight - topOffest, Config.canvasWidth, Config.canvasHeight);
+    drawStats(messageLog.currentStats);
+    drawLog(messageLog.messages);
   }
-  ctx.restore();
-  ctx.fillStyle = "#000000";
-  ctx.fillRect(0, 0, Config.canvasWidth, topOffest);
-  ctx.fillRect(0, Config.canvasHeight - topOffest, Config.canvasWidth, Config.canvasHeight);
+
 }
 
 const setCameraOffset = () => {
@@ -89,6 +94,25 @@ const drawFog = (map, sightIndices, viewport) => {
     }
   }
 }
+const drawStats = (stats) => {
+  ctx.fillStyle = "#fff";
+  ctx.font = "25px Orange Kid";
+  ctx.fillText(`HP: ${stats.hp} / ${stats.maxHp}`, 20, 25);
+  ctx.fillText(`Weapon: ${stats.weapon.name}`, 20, 55);
+  ctx.fillText(`Armor: ${stats.armor.name}`, 20, 85);
+  ctx.fillText(`Player Level: ${stats.playerLevel}`, 420, 25);
+  ctx.fillText(`XP: ${stats.xp} / ${stats.nextXp}`, 420, 55);
+  ctx.fillText(`Dungeon Level: ${stats.dungeonLevel}`, 420, 85);
+};
+
+const drawLog = (log) => {
+  let messages = log.slice(-4);
+  for(let i = 0; i < messages.length; i++){
+    ctx.fillStyle = "#fff";
+    ctx.font = "20px Orange Kid";
+    ctx.fillText(messages[i], 20, Config.canvasHeight - topOffest + (i * 30) + 25);
+  }
+};
 
 // Let's see where this goes...
 const drawer = {

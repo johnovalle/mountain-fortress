@@ -10,6 +10,7 @@ import * as MapUtil from "./map-util";
 import * as Entity from './entities';
 import { map1 } from './maps';
 import { rollDice } from './utility';
+import { messageLog } from './messageLog';
 
 var animationCounter = 0;
 
@@ -87,6 +88,17 @@ export const Game = {
       Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.currentLevel.map]});
       let playerStart = getRandomAvailable(Model.scenes.play.currentLevel.map, Model.scenes.play.currentLevel.entities);
       Model.state.player = Entity.buildPlayer(level1, 5, playerStart); //{index: 28, x: 1, y:1}
+      messageLog.reset();
+      messageLog.currentStats.hp = Model.state.player.hp;
+      messageLog.currentStats.maxHp = Model.state.player.maxHp;
+      messageLog.currentStats.playerLevel = Model.state.player.level;
+      messageLog.currentStats.weapon = Model.state.player.weapon;
+      messageLog.currentStats.armor = Model.state.player.armor;
+      messageLog.currentStats.damageModifier = Model.state.player.damageModifier;
+      messageLog.currentStats.xp = Model.state.player.xp;
+
+      messageLog.currentStats.nextXp = playerXpTable[Model.state.player.level];
+      messageLog.currentStats.dungeonLevel = level1.baseDifficulty;
       //Model.scenes.play.currentLevel.entities.push({name: 'player', index: playerStart.index, x: playerStart.x * 64, y: playerStart.y * 64, key: 5 });
       //Model.state.player = Model.scenes.play.currentLevel.entities[0];
     }, ControllerMaps.play );
@@ -183,13 +195,14 @@ export const Game = {
     entity.nextY = entity.y;
 
     //
-    //  let message = "You go ";
-    //  if(stairs.type === "stairsUp"){ //there are only two types of stairs
-    //    message += "up the stairs"; //to level?
-    //  } else {
-    //    message += "down the stairs";
-    //  }
-    //  messageLog.messages.push(message);
+    let message = "You go ";
+    if(stairs.subtype === "stairs up"){ //there are only two types of stairs
+      message += "up the stairs"; //to level?
+    } else {
+      message += "down the stairs";
+    }
+    messageLog.messages.push(message);
+    messageLog.currentStats.dungeonLevel = nextLevel.baseDifficulty;
     this.goToLevel(stairs.targetLevel);
     Entity.removeEntityFromLevel(currentLevel, entity);
   },
@@ -230,9 +243,12 @@ export const Game = {
       posAdj = "your";
     }
 
-    let message = `${aIdentity} ${verb} ${dIdentiy} for ${damage} bringing ${posAdj} hp to ${defender.hp}`;
-    console.log(message);
-    //messageLog.messages.push(message);
+    let message = `${aIdentity} ${verb} ${dIdentiy}`; //` for ${damage} bringing ${posAdj} hp to ${defender.hp}`;
+    //console.log(`${aIdentity} ${verb} ${dIdentiy} for ${damage} bringing ${posAdj} hp to ${defender.hp}`);
+    messageLog.messages.push(message);
+    if(defender.type === "player"){
+      messageLog.currentStats.hp = defender.hp;
+    }
     if(defender.hp <= 0){
       // if(defender.type === "player" || defender.name === "black dragon") {
       //   // end the game
@@ -241,6 +257,7 @@ export const Game = {
         Entity.removeEntityFromLevel(level, defender);
         if(attacker.type === "player"){
           attacker.xp += defender.xpVal;
+          messageLog.currentStats.xp = attacker.xp;
           //check if player leveled
           this.checkPlayerLevel();
         }
@@ -259,9 +276,9 @@ export const Game = {
         return p.index === Model.state.player.index;
       });
       if(sightIndices.length > 0) {
-        console.log("can see the player");
+        //console.log("can see the player");
         direction = MapUtil.getDirectionTowardsPoint(this.state.currentScene.currentLevel, currentCoords, sightIndices[0]);
-        console.log(`direction chosen towards player is:`, direction);
+        //console.log(`direction chosen towards player is:`, direction);
         direction = direction || MapUtil.getValidDirection(this.state.currentScene.currentLevel, entities[i]); //This is a cheat
         //if monster can't pass through wall or two monsters want to occupy the same place in the direction on the player
         //really need a weigthed system so if it's first choice isn't available it'll choose something else
@@ -296,16 +313,22 @@ export const Game = {
   },
   checkPlayerLevel() { //in a more robust version monsters could also level but I'll keep this simple
     let player = Model.state.player;
-    console.log(player.xp, playerXpTable[player.level]);
+    //console.log(player.xp, playerXpTable[player.level]);
     if(player.xp >= playerXpTable[player.level]){
       player.level++;
       player.maxHp += 10;
       player.hp += 10; //we'll assume the player got a full roll, if too hard player.hp = player.maxHp
-      player.xp = 0;
+      player.xp = player.xp - playerXpTable[player.level-1];
       player.damageModifier++;
-      //messageLog.messages.push(`Nice work! You leveled up! You are level ${player.level}`);
-      //messageLog.messages.push("You gained 10 hit points and 1 point of damage!");
-      console.log(`player leveled to ${player.level}, hp: ${player.hp}`);
+
+      messageLog.messages.push(`Nice work! You leveled up! You are level ${player.level}`);
+      messageLog.messages.push("You gained 10 hit points and 1 point of damage!");
+      messageLog.currentStats.xp = player.xp;
+      messageLog.currentStats.hp = player.hp;
+      messageLog.currentStats.maxHp = player.maxHp;
+      messageLog.currentStats.playerLevel = player.level;
+      messageLog.currentStats.nextXp = playerXpTable[player.level];
+      //console.log(`player leveled to ${player.level}, hp: ${player.hp}`);
     }
   },
   getItem(entity, item, level) {
@@ -314,17 +337,22 @@ export const Game = {
     if(itemProps.subtype === "weapon" && entity.weapon.threat < itemProps.threat){
       entity.weapon = itemProps;
       message = `You found a ${itemProps.name}!`;
+      messageLog.currentStats.weapon = itemProps;
     }
     if(itemProps.subtype === "armor" && entity.armor.threat < itemProps.threat){
       entity.armor = itemProps;
       message = `You found ${itemProps.name}!`;
+      messageLog.currentStats.armor = itemProps;
     }
     if(itemProps.subtype === "health"){
       entity.hp += itemProps.heals;
       message = `You drink a ${itemProps.name}, you heal ${itemProps.heals} points!`; //should probably have a verb too
+      messageLog.currentStats.hp = entity.hp;
     }
-    //messageLog.messages.push(message);
-    console.log(message);
+    if(message){
+      messageLog.messages.push(message);
+      //console.log(message);
+    }
     Entity.removeEntityFromLevel(level, item);
   },
   generateMonster() {
