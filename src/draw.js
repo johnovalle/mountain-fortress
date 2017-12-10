@@ -20,15 +20,19 @@ export const draw = (state) => {
       return MapUtil.xyToIndex(p);
     });
     sightIndices.push(Model.state.player.index);
-    let viewport = MapUtil.getIndicesInViewport();
+    let viewport = MapUtil.getIndicesInViewport(1);
+    //console.log(viewport.length);
     //console.log(translateOffset);
     //ctx.translate(translateOffset.x * -spritesheet.tileSize, translateOffset.y * -spritesheet.tileSize);
-    ctx.translate(translateOffset.x, translateOffset.y + 100);
+    ctx.translate(translateOffset.x, translateOffset.y + topOffest);
     drawMap(state.currentScene.currentLevel.map, viewport);
     drawEntities(state.currentScene.currentLevel, sightIndices, viewport);
     drawFog(state.currentScene.currentLevel.map, sightIndices, viewport);
   }
   ctx.restore();
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0, 0, Config.canvasWidth, topOffest);
+  ctx.fillRect(0, Config.canvasHeight - topOffest, Config.canvasWidth, Config.canvasHeight);
 }
 
 const setCameraOffset = () => {

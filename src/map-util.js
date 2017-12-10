@@ -146,17 +146,23 @@ export const checkIndex = (entity, key) => { //Think about drying this up
   return { target: tileDictionary[Config.currentMap.grid[newIndex]], index: newIndex };
 };
 
-export const getIndicesInViewport = () => { //takes a var to grab extra map cells around the the viewport
+export const getIndicesInViewport = (padding = 0) => { //takes a var to grab extra map cells around the the viewport
   let viewport = Object.assign({}, Config.translateOffset);
   //X and Y meaing both the pixel position and the coordinate position is confusing and source of bugs fix
-  viewport.x = Math.abs(viewport.x) / Config.tileSize;
-  viewport.y = Math.abs(viewport.y) / Config.tileSize;
+  viewport.x = (Math.abs(viewport.x) / Config.tileSize) - padding;
+  viewport.y = (Math.abs(viewport.y) / Config.tileSize) - padding;
+  //console.log(viewport.x , viewport.y);
+  //console.log(viewport.x , viewport.y);
   let indices = []; // this should have a length of 81;
-
+  //console.log(viewport.x + (Config.rowsToShow * 2), viewport.y + (Config.rowsToShow * 2));
+  //console.log(viewport.x + (Config.rowsToShow * 2) + padding, viewport.y + (Config.rowsToShow * 2) + padding);
+  if(padding > 0){
+    padding += 1; //not sure why this is necessary but without it, it's not extending far enough...
+  }
   for(let i = 0; i < Config.currentMap.grid.length; i++) {
     let tileCords = indexToXY(i);
-    if(tileCords.x >= viewport.x && tileCords.x <= viewport.x + (Config.rowsToShow * 2)
-       && tileCords.y >= viewport.y && tileCords.y <= viewport.y + (Config.rowsToShow * 2)) {
+    if(tileCords.x >= viewport.x && tileCords.x <= viewport.x + (Config.rowsToShow * 2) + padding
+       && tileCords.y >= viewport.y && tileCords.y <= viewport.y + (Config.rowsToShow * 2) + padding) {
       indices.push(i);
     }
   }
