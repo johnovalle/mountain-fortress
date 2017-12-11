@@ -15,7 +15,7 @@ export let messageLog = {
     this.startGame = {messages: [
       {text: "Welcome to Black Dragon 2: Dragon Spawn", size: 24, x:120, y:680},
       {text: "Hit Enter to start", size: 24, x:220, y:710},
-      {text: "Control using the number pad or key Q-C", size: 24, x: 135, y: 740}
+      {text: "Control using the number pad or key Q-C, M to toggle music", size: 24, x: 55, y: 740}
     ]};
   }
 };

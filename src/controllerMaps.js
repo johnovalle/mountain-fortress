@@ -3,7 +3,8 @@ import { Game } from './game';
 
 const controllerMaps = {
   start: {
-    "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["play"]}; }
+    "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["play"]}; },
+    "m": () => { return {action: Game.toggleMusic.bind(Game), args: []}; }
   },
   play: {
     //"Enter": () => { return {action: Model.changeScene.bind(Model), args: ["gameOver"]}; },
@@ -29,6 +30,7 @@ const controllerMaps = {
     "z": () => { return {action: Game.movePlayer.bind(Game), args: ["down-left"]}; },
     "c": () => { return {action: Game.movePlayer.bind(Game), args: ["down-right"]}; },
     "s": () => { return {action: Game.movePlayer.bind(Game), args: ["wait"]}; },
+    "m": () => { return {action: Game.toggleMusic.bind(Game), args: []}; }
   },
   gameOver: {
     "Enter": () => { return {action: Model.changeScene.bind(Model), args: ["start"]}; }

@@ -11,6 +11,7 @@ import * as Entity from './entities';
 import { map1 } from './maps';
 import { rollDice } from './utility';
 import { messageLog } from './messageLog';
+import { addSong } from './audio';
 
 var animationCounter = 0;
 
@@ -64,6 +65,8 @@ const playerXpTable = { //this should be computed using a config value
   9: 51200,
   10: 102400
 };
+let titleTheme = addSong('title.mp3');
+let dungeonTheme = addSong('crawl.mp3', true);
 
 export const Game = {
   state: Model.state,
@@ -71,22 +74,48 @@ export const Game = {
     loadImage("blackdragonCover1.png", "start");
     loadSpritesheet("mountain-fortress-e.png", 64, 512, () => {
       this.run();
-    })
+    });
+    //These need to be bundled in an asset loader
+
   },
   gameTick: 0, //total elapsed turns
   lastTick: 0,
+  musicEnabled: true, //this should be in model
+  currentTrack: null,
+  toggleMusic(){
+    this.musicEnabled = !this.musicEnabled;
+    if(this.musicEnabled) {
+      this.currentTrack.play();
+    }else {
+      this.currentTrack.pause();
+    }
+  },
   start(){
     Canvas.attachCanvas(document.body); //should only do this the first time
     this.lastTick = 0;
     this.gameTick = 0;
 
-    Model.addScene("start", ()=> { console.log("enter start scene");}, ControllerMaps.start );
+
+    Model.addScene("start", ()=> { console.log("enter start scene");
+      this.currentTrack = titleTheme;
+      if (this.musicEnabled) {
+        this.currentTrack.play();
+      }
+    }, ControllerMaps.start );
     Model.addScene("gameOver", ()=> { console.log("enter game over scene");
       Model.state.playerMoved = false;
       Model.state.lastMoveFinished = true;
       Model.restart();
+      this.currentTrack.pause();
+      this.currentTrack.currenTime = 0;
     }, ControllerMaps.gameOver );
     Model.addScene("play", () => { console.log("enter play scene");
+      this.currentTrack.pause();
+      this.currentTrack.currenTime = 0;
+      this.currentTrack = dungeonTheme;
+      if (this.musicEnabled) {
+        this.currentTrack.play();
+      }
       let level1 = Model.createLevel();
       Model.scenes.play.currentLevel = level1;
       Dispatcher.sendMessage({action: "Change Map", payload: [Model.scenes.play.currentLevel.map]});
