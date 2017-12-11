@@ -347,7 +347,7 @@ export const Game = {
     }
     if(itemProps.subtype === "health"){
       entity.hp += itemProps.heals;
-      message = `You drink a ${itemProps.name}, you heal ${itemProps.heals} points!`; //should probably have a verb too
+      message = `You ${itemProps.verb} a ${itemProps.name}, you heal ${itemProps.heals} points!`; //should probably have a verb too
       messageLog.currentStats.hp = entity.hp;
     }
     if(message){

@@ -20,11 +20,15 @@ export const tileDictionary = {
   18: {passible: true, type: "item"},
   19: {passible: true, type: "item"},
   20: {passible: true, type: "item"},
+  21: {passible: true, type: "item"},
+  22: {passible: true, type: "item"},
+  23: {passible: true, type: "item"},
   24: {passible: true, type: "item"},
   25: {passible: true, type: "item"},
   26: {passible: true, type: "item"},
   27: {passible: true, type: "item"},
   28: {passible: true, type: "item"},
+  29: {passible: true, type: "item"},
 };
 
 export const monsterDictionary = {
@@ -49,5 +53,8 @@ export const itemDictionary = {// threat should be threshold
   26: {name: "scale armor", subtype: "armor", protection: 3, threat: 5},
   27: {name: "plate armor", subtype: "armor", protection: 4, threat: 7},
   28: {name: "star armor", subtype: "armor", protection: 5, threat: 9},
-  //15: {name: "health potion", subtype: "health", heals: 10}
+  21: {name: "fresh apple", subtype: "health", verb: "eat", heals: 1, threat: 1},
+  22: {name: "bread roll", subtype: "health", verb: "eat", heals: 2, threat: 2},
+  23: {name: "holiday ham", subtype: "health", verb: "eat", heals: 4, threat: 5},
+  29: {name: "health potion", subtype: "health", verb: "drink", heals: 10, threat: 9},
 };
