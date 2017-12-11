@@ -62,6 +62,10 @@ const model = {
       let stairDownIndex = getRandomAvailable(level.map, level.entities);
       Entity.buildStairs(level, 7, stairDownIndex); //{index: 29, x: 2, y:1}
     }
+    if(this.levelCounter === 10) {
+      let dragonIndex = getRandomAvailable(level.map, level.entities);
+      Entity.buildMonster(level, 15, dragonIndex);
+    }
 
     Entity.populateLevel(level);
 

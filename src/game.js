@@ -286,10 +286,16 @@ export const Game = {
       messageLog.currentStats.hp = defender.hp;
     }
     if(defender.hp <= 0){
-      // if(defender.type === "player" || defender.name === "black dragon") {
-      //   // end the game
-      //   Model.changeScene("gameOver");
-      // }else {
+      if(defender.name === "black dragon") {
+        messageLog.endGame.messages.push({
+          text: `You have killed the black dragon spawn`,
+           size: 24, x:125, y: 300});
+        messageLog.endGame.messages.push({
+          text: `saving the world for a generation!`,
+          size: 24, x:145, y: 330});
+        Model.changeScene("gameOver");
+      }
+
         Entity.removeEntityFromLevel(level, defender);
         if(attacker.type === "player"){
           attacker.xp += defender.xpVal;
