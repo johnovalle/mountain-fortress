@@ -59,7 +59,10 @@ const playerXpTable = { //this should be computed using a config value
   4: 1600,
   5: 3200,
   6: 6400,
-  7: 12800
+  7: 12800,
+  8: 25600,
+  9: 51200,
+  10: 102400
 };
 
 export const Game = {
@@ -77,7 +80,7 @@ export const Game = {
     this.lastTick = 0;
     this.gameTick = 0;
 
-    Model.addScene("start", ()=> { console.log("enter start scene"); }, ControllerMaps.start );
+    Model.addScene("start", ()=> { console.log("enter start scene");}, ControllerMaps.start );
     Model.addScene("gameOver", ()=> { console.log("enter game over scene");
       Model.state.playerMoved = false;
       Model.state.lastMoveFinished = true;
@@ -190,6 +193,7 @@ export const Game = {
     }
     //  let nextLevel = model.levels[stairs.target];
     entity.index = stairs.targetIndex;
+    // need to add a way to delay this so it can be animated...
     nextLevel.entities.push(entity);
     Object.assign(entity, MapUtil.indexTrueToXY(entity.index)); //check
     entity.nextX = entity.x;
@@ -206,6 +210,8 @@ export const Game = {
     messageLog.currentStats.dungeonLevel = nextLevel.baseDifficulty;
     this.goToLevel(stairs.targetLevel);
     Entity.removeEntityFromLevel(currentLevel, entity);
+
+    Dispatcher.sendMessage({action: "Fade-out-in", payload: [true]});
   },
   goToLevel(level) {
     this.state.currentScene.currentLevel = Model.levels[level];
@@ -299,6 +305,10 @@ export const Game = {
           if(playerIndex !== null) {
             this.attackEntity(entities[i], this.state.player, this.state.currentScene.currentLevel);
             if(this.state.player.hp <= 0){
+              //add fadeout here as well
+              messageLog.endGame.messages.push({
+                text: `You were killed by a ${entities[i].name} on level ${this.state.currentScene.currentLevel.baseDifficulty}`,
+                 size: 24, x:120, y: 300})
               Model.changeScene("gameOver");
               break;
             }

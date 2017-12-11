@@ -11,11 +11,23 @@ let currentCoords = null;
 let translateOffset = {x: 0, y: 0};
 let topOffest = 100;
 
+let fadeOut = false;
+let fadeIn = false;
+let animationCounter = 0;
+
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
 
   if(state.currentScene.name === "start") {
    drawCover("start");
+   drawInstructions("startGame");
+  }
+
+  if(state.currentScene.name === "gameOver") {
+   //drawCover("gaveOver");
+   ctx.fillStyle = "#000";
+   ctx.fillRect(0, 0, Config.canvasWidth, Config.canvasHeight);
+   drawInstructions("endGame");
   }
 
   if(state.currentScene.currentLevel && state.currentScene.currentLevel.map) { //Temporary
@@ -38,12 +50,50 @@ export const draw = (state) => {
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, Config.canvasWidth, topOffest);
     ctx.fillRect(0, Config.canvasHeight - topOffest, Config.canvasWidth, Config.canvasHeight);
+
+    if(fadeOut){
+      drawFade();
+    }
     drawStats(messageLog.currentStats);
     drawLog(messageLog.messages);
   }
 
 }
 
+const drawFade = () => {
+  animationCounter++;
+  let curAlpha;
+  if (fadeIn){
+    if (animationCounter <= 16) {
+      curAlpha = animationCounter / 16;
+    }
+    if (animationCounter > 16) {
+      let fadeIn = (16 - (animationCounter % 16)) / 16;
+      curAlpha = Math.floor(animationCounter / 2) % 16;
+    }
+    if (animationCounter === 32) {
+      curAlpha = 0;
+    }
+  } else {
+    curAlpha = animationCounter / 32
+  }
+  ctx.fillStyle = `rgba(0,0,0,${curAlpha})`;
+  ctx.fillRect(0, 0, Config.canvasWidth, Config.canvasHeight);
+  if (animationCounter === 32) {
+    animationCounter = 0;
+    fadeIn = false;
+    fadeOut = false;
+  }
+}
+
+const drawInstructions = (scene) => {
+  let messages = messageLog[scene].messages;
+  ctx.fillStyle = "#fff";
+  for(let i = 0; i < messages.length; i++){
+    ctx.font = `${messages[i].size}px Orange Kid`;
+    ctx.fillText(messages[i].text, messages[i].x, messages[i].y);
+  }
+}
 const setCameraOffset = () => {
   //console.log("this got called");
   currentCoords = MapUtil.indexToXY(Model.state.player.index); //only get this on scene/level change
@@ -137,7 +187,12 @@ const drawer = {
     translateOffset = MapUtil.constrainCameraTranslation(Model.state.player);
     Config.translateOffset = translateOffset
   },
+  setFadeout(shouldFadeIn){
+    fadeOut = true;
+    fadeIn = shouldFadeIn;
+  }
 };
 Dispatcher.addListener(drawer);
 Dispatcher.addAction(drawer, {name: "Change Scene", trigger: drawer.redraw});
 Dispatcher.addAction(drawer, {name: "Update Camera", trigger: drawer.updateCamera});
+Dispatcher.addAction(drawer, {name: "Fade-out-in", trigger: drawer.setFadeout});

@@ -1,7 +1,5 @@
 export let messageLog = {
-  messages: ["The egg of the black dragon who killed your father's family has hatched",
-  "Deep at the bottom of a mountain fortress the hatchling gathers power",
-  "Venture forth and kill the black dragon welp before it's too late!"],
+  messages: [],
   currentStats: {},
   endGame: {},
   startGame: {},
@@ -10,7 +8,16 @@ export let messageLog = {
     "Deep at the bottom of a mountain fortress the hatchling gathers power",
     "Venture forth and kill the black dragon welp before it's too late!"];
     this.currentStats = {};
-    this.endGame = {};
-    this.startGame = {};
+    this.endGame = {messages: [
+      {text: "Game Over", size: 40, x:200, y:150},
+      {text: "Hit Enter", size: 24, x:250, y:600}
+    ]};
+    this.startGame = {messages: [
+      {text: "Welcome to Black Dragon 2: Dragon Spawn", size: 24, x:120, y:680},
+      {text: "Hit Enter to start", size: 24, x:220, y:710},
+      {text: "Control using the number pad or key Q-C", size: 24, x: 135, y: 740}
+    ]};
   }
 };
+
+messageLog.reset();
