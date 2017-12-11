@@ -14,6 +14,10 @@ let topOffest = 100;
 export const draw = (state) => {
   ctx.clearRect(0, 0, Config.canvasWidth, Config.canvasHeight);
 
+  if(state.currentScene.name === "start") {
+   drawCover("start");
+  }
+
   if(state.currentScene.currentLevel && state.currentScene.currentLevel.map) { //Temporary
     ctx.save();
     let currentCoords = MapUtil.indexToXY(Model.state.player.index);
@@ -80,7 +84,7 @@ const drawMap = (map, viewport) => { //check viewport here and only draw what's 
       let sx = (tile % spritesheet.sheetCols) * spritesheet.tileSize // tile value against width of tilesheet in tiles * tile size on sheet
       let sy = Math.floor(tile / spritesheet.sheetCols) * spritesheet.tileSize;
       ctx.drawImage(spritesheet.sheet, sx, sy, spritesheet.tileSize, spritesheet.tileSize,
-                                      x, y, Config.tileSize, Config.tileSize);
+                                      x, y, Config.tileSize + 1, Config.tileSize + 1);
     }
   }
 };
@@ -113,6 +117,10 @@ const drawLog = (log) => {
     ctx.fillText(messages[i], 20, Config.canvasHeight - topOffest + (i * 30) + 25);
   }
 };
+
+const drawCover = (name) => {
+  ctx.drawImage(spritesheet[name], 0, 0, Config.canvasWidth, Config.canvasHeight);
+}
 
 // Let's see where this goes...
 const drawer = {

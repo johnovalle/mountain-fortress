@@ -2,7 +2,7 @@ import * as Canvas from "./canvas";
 import Model from "./model";
 import Dispatcher from "./dispatcher";
 import ControllerMaps from "./controllerMaps";
-import { loadSpritesheet } from "./sprites";
+import { loadSpritesheet, loadImage } from "./sprites";
 import { draw } from "./draw";
 import { getRandomAvailable } from "./roomGen";
 import Config from "./config";
@@ -65,7 +65,8 @@ const playerXpTable = { //this should be computed using a config value
 export const Game = {
   state: Model.state,
   loadGame(){
-    loadSpritesheet("mountain-fortress.png", 32, 256, () => {
+    loadImage("blackdragonCover1.png", "start");
+    loadSpritesheet("mountain-fortress-e.png", 64, 512, () => {
       this.run();
     })
   },
