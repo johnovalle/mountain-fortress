@@ -11,6 +11,8 @@ const Entity = {
 
 let idCounter = 1;
 
+const generatedItems = [];
+
 export const buildEntityMap = (level) => {
   level.entitiesMap = {};
   level.entitiesMap.grid = Array(Config.mapCols * Config.mapRows).fill(0);
@@ -93,9 +95,16 @@ export const populateLevel = (level) => {
   let numItems = Math.floor(numMonsters / 3);
   let possibleItems = getPossibleItems(level);
   for(let i = 0; i < numItems; i++){
+    let key = getRandomInArray(possibleItems);
+    let item = itemDictionary[key];
+    if(item.subtype === "weapon" || item.subtype === "armor") {
+      generatedItems.push(key);
+      let itemKey = possibleItems.indexOf(key);
+      possibleItems.splice(itemKey,1);
+    }
     buildItem(
       level,
-      getRandomInArray(possibleItems),
+      key,
       getRandomAvailable(level.map, level.entities)
     );
   }
@@ -125,7 +134,9 @@ const getPossibleMonsters = (level) => {
 const getPossibleItems = (level) => {
   return Object.keys(itemDictionary).filter((iKey) => {
     let item = itemDictionary[iKey];
-    return item.threat <= level.baseDifficulty && item.threat >= Math.floor(level.baseDifficulty / 2);
+    return item.threat <= level.baseDifficulty 
+      && item.threat >= Math.floor(level.baseDifficulty / 2) 
+      && generatedItems.indexOf(iKey) === -1;
   });
 }
 
