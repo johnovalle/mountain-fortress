@@ -106,6 +106,7 @@ export const Game = {
       Model.state.playerMoved = false;
       Model.state.lastMoveFinished = true;
       Model.restart();
+      Entity.reset();
       this.currentTrack.pause();
       this.currentTrack.currenTime = 0;
     }, ControllerMaps.gameOver );

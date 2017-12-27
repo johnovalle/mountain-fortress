@@ -11,7 +11,11 @@ const Entity = {
 
 let idCounter = 1;
 
-const generatedItems = [];
+let generatedItems = []; // This probably should be on the game object
+
+export const reset = () => {
+  generatedItems = [];
+} 
 
 export const buildEntityMap = (level) => {
   level.entitiesMap = {};
@@ -97,6 +101,7 @@ export const populateLevel = (level) => {
   for(let i = 0; i < numItems; i++){
     let key = getRandomInArray(possibleItems);
     let item = itemDictionary[key];
+    console.log(`generated: ${item.name}`);
     if(item.subtype === "weapon" || item.subtype === "armor") {
       generatedItems.push(key);
       let itemKey = possibleItems.indexOf(key);
