@@ -1,0 +1,23 @@
+{
+  "name": "mountain-fortress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rollup.config.js",
+  "scripts": {
+    "start": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kugyousha/mountain-fortress.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kugyousha/mountain-fortress/issues"
+  },
+  "homepage": "https://github.com/kugyousha/mountain-fortress#readme",
+  "dependencies": {
+    "rollup": "^0.53.1"
+  }
+}
