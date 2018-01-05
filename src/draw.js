@@ -160,7 +160,7 @@ const drawStats = (stats) => {
 };
 
 const drawLog = (log) => {
-  let messages = log.slice(-4);
+  let messages = log.slice(-3);
   for(let i = 0; i < messages.length; i++){
     ctx.fillStyle = "#fff";
     ctx.font = "20px Orange Kid";

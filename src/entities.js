@@ -36,6 +36,7 @@ const buildEntity = (level, key, location) => { //lets assume the index is clear
   entity.nextY = entity.y;
   entity.id = idCounter;
   entity.type = tileDictionary[entity.key].type;
+  entity.subtype = tileDictionary[entity.key].subtype;
 
   idCounter++;
   level.entitiesMap[entity.index] = entity.key;

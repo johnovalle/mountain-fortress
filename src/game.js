@@ -72,7 +72,7 @@ export const Game = {
   state: Model.state,
   loadGame(){
     loadImage("blackdragonCover1.png", "start");
-    loadSpritesheet("mountain-fortress-e.png", 64, 512, () => {
+    loadSpritesheet("mountain-fortress.png", 32, 256, () => {
       this.run();
     });
     //These need to be bundled in an asset loader
