@@ -97,7 +97,7 @@ export const populateLevel = (level) => {
       getRandomAvailable(level.map, level.entities)
     );
   }
-  let numItems = Math.floor(numMonsters / 3);
+  let numItems = Math.max(Math.floor(numMonsters / 3), 2);
   let possibleItems = getPossibleItems(level);
   for(let i = 0; i < numItems; i++){
     let key = getRandomInArray(possibleItems);
